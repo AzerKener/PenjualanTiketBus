@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pegawai extends Model
 {
-    protected $fillable = ['nama', 'role', 'pool_id', 'no_hp'];
+    protected $fillable = ['nama', 'role', 'pool_id', 'no_hp', 'user_id'];
 
     public function pool()
     {
         return $this->belongsTo(Pool::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function jadwalSupir1()

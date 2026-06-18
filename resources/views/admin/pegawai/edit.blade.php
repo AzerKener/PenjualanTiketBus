@@ -64,7 +64,6 @@
                     <option value="" disabled>-- Pilih Role --</option>
                     <option value="Supir" {{ old('role', $pegawai->role) == 'Supir' ? 'selected' : '' }}>Supir</option>
                     <option value="Kenek" {{ old('role', $pegawai->role) == 'Kenek' ? 'selected' : '' }}>Kenek</option>
-                    <option value="Sales" {{ old('role', $pegawai->role) == 'Sales' ? 'selected' : '' }}>Sales</option>
                     <option value="Admin" {{ old('role', $pegawai->role) == 'Admin' ? 'selected' : '' }}>Admin</option>
                 </select>
                 @error('role')

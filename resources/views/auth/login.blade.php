@@ -91,7 +91,7 @@
             </form>
 
             <div class="mt-6 pt-6 border-t border-white/10 text-center">
-                <p class="text-xs text-blue-300 mb-4">Tersedia untuk: Admin · Sales · Supir</p>
+                <p class="text-xs text-blue-300 mb-4">Tersedia untuk: Admin &middot; Supir &middot; Kenek</p>
                 <a href="{{ route('user.home') }}" class="inline-flex items-center gap-2 text-sm text-white hover:text-blue-200 transition-colors font-medium">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>

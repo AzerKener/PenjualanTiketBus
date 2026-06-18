@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Supir') — BusTicket</title>
+    <title>@yield('title', 'Kenek') — BusTicket</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; }</style>
@@ -13,18 +13,18 @@
     <nav class="bg-slate-900 sticky top-0 z-20">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-14">
-                <a href="{{ route('supir.dashboard') }}" class="flex items-center gap-3">
-                    <div class="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center">
+                <a href="{{ route('kenek.dashboard') }}" class="flex items-center gap-3">
+                    <div class="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4"/></svg>
                     </div>
-                    <span class="font-bold text-white text-sm">BusTicket <span class="text-blue-400 font-normal">Supir</span></span>
+                    <span class="font-bold text-white text-sm">BusTicket <span class="text-green-400 font-normal">Kenek</span></span>
                 </a>
                 <div class="flex items-center gap-3">
                     <div class="text-right hidden sm:block">
                         <p class="text-sm font-medium text-white">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-slate-400">Supir</p>
+                        <p class="text-xs text-slate-400">Kenek</p>
                     </div>
-                    <a href="{{ route('supir.akun.index') }}" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-white hover:bg-slate-700 transition-colors">
+                    <a href="{{ route('kenek.akun.index') }}" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-white hover:bg-slate-700 transition-colors">
                         Profil
                     </a>
                     <form method="POST" action="{{ route('logout') }}">

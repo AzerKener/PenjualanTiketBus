@@ -63,7 +63,6 @@
                     <option value="" disabled selected>-- Pilih Role --</option>
                     <option value="Supir" {{ old('role') == 'Supir' ? 'selected' : '' }}>Supir</option>
                     <option value="Kenek" {{ old('role') == 'Kenek' ? 'selected' : '' }}>Kenek</option>
-                    <option value="Sales" {{ old('role') == 'Sales' ? 'selected' : '' }}>Sales</option>
                     <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
                 </select>
                 @error('role')

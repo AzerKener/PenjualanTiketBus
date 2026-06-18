@@ -40,7 +40,6 @@
                     <option value="">Semua Role</option>
                     <option value="Supir" {{ request('role') == 'Supir' ? 'selected' : '' }}>Supir</option>
                     <option value="Kenek" {{ request('role') == 'Kenek' ? 'selected' : '' }}>Kenek</option>
-                    <option value="Sales" {{ request('role') == 'Sales' ? 'selected' : '' }}>Sales</option>
                     <option value="Admin" {{ request('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
                 </select>
             </div>
@@ -96,10 +95,9 @@
                         <td class="px-6 py-4">
                             @php
                                 $roleBadge = match($pegawai->role) {
+                                    'Admin' => 'bg-purple-100 text-purple-700',
                                     'Supir' => 'bg-blue-100 text-blue-700',
                                     'Kenek' => 'bg-emerald-100 text-emerald-700',
-                                    'Sales' => 'bg-amber-100 text-amber-700',
-                                    'Admin' => 'bg-red-100 text-red-700',
                                     default => 'bg-slate-100 text-slate-600',
                                 };
                             @endphp

@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin;
-use App\Http\Controllers\Sales;
 use App\Http\Controllers\Supir;
+use App\Http\Controllers\Kenek;
 use App\Http\Controllers\User;
 
 // ─── Root / Landing Page ──────────────────────────────────────────────────────
@@ -13,8 +13,8 @@ Route::get('/', function () {
     if (auth()->check()) {
         return match (auth()->user()->role) {
             'Admin' => redirect()->route('admin.dashboard'),
-            'Sales' => redirect()->route('sales.dashboard'),
             'Supir' => redirect()->route('supir.dashboard'),
+            'Kenek' => redirect()->route('kenek.dashboard'),
             default => redirect()->route('user.home'),
         };
     }
@@ -69,23 +69,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:Admin'])->grou
     Route::get('/akun',      [Admin\AkunController::class,       'index'])->name('akun.index');
 });
 
-// ─── Sales Routes ─────────────────────────────────────────────────────────────
-Route::prefix('sales')->name('sales.')->middleware(['auth', 'role:Sales'])->group(function () {
-    Route::get('/dashboard', [Sales\PemesananController::class, 'index'])->name('dashboard');
-
-    Route::get('/pemesanan',                    [Sales\PemesananController::class, 'index'])->name('pemesanan.index');
-    Route::post('/pemesanan/cari',              [Sales\PemesananController::class, 'cariJadwal'])->name('pemesanan.cari');
-    Route::get('/pemesanan/pilih/{jadwal}',     [Sales\PemesananController::class, 'pilihJadwal'])->name('pemesanan.pilih');
-    Route::post('/pemesanan/store',             [Sales\PemesananController::class, 'store'])->name('pemesanan.store');
-    Route::get('/pemesanan/sukses/{pemesanan}', [Sales\PemesananController::class, 'sukses'])->name('pemesanan.sukses');
-    Route::get('/pemesanan/kursi-terisi/{jadwal}', [Sales\PemesananController::class, 'getKursiTerisi'])->name('pemesanan.kursiTerisi');
-    Route::post('/pemesanan/jadwal-pulang',     [Sales\PemesananController::class, 'getJadwalPulang'])->name('pemesanan.jadwalPulang');
-
-    Route::get('/transaksi', [Sales\TransaksiController::class, 'index'])->name('transaksi.index');
-});
-
 // ─── Supir Routes ─────────────────────────────────────────────────────────────
 Route::prefix('supir')->name('supir.')->middleware(['auth', 'role:Supir'])->group(function () {
     Route::get('/dashboard', [Supir\JadwalController::class, 'index'])->name('dashboard');
     Route::get('/jadwal',    [Supir\JadwalController::class, 'index'])->name('jadwal.index');
+    
+    Route::get('/akun',      [Supir\AkunController::class, 'index'])->name('akun.index');
+});
+
+// ─── Kenek Routes ─────────────────────────────────────────────────────────────
+Route::prefix('kenek')->name('kenek.')->middleware(['auth', 'role:Kenek'])->group(function () {
+    Route::get('/dashboard', [Kenek\JadwalController::class, 'index'])->name('dashboard');
+    Route::get('/jadwal',    [Kenek\JadwalController::class, 'index'])->name('jadwal.index');
+    
+    Route::get('/akun',      [Kenek\AkunController::class, 'index'])->name('akun.index');
 });
