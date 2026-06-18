@@ -91,10 +91,9 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($jadwals as $jadwal)
                     <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-4 py-3">
-                            <span class="text-sm font-mono font-semibold text-slate-800">{{ $jadwal->bus->no_polisi ?? '-' }}</span>
-                            <br>
-                            <span class="text-xs text-slate-400">{{ $jadwal->bus->tipe_bus ?? '' }}</span>
+                        <td class="px-6 py-4">
+                            <span class="text-sm font-mono font-semibold text-slate-800">{{ $jadwal->bus->nomor_polisi ?? '-' }}</span>
+                            <span class="ml-1.5 text-xs text-slate-500">{{ $jadwal->bus->tipe_bus ?? '' }}</span>
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-1 text-sm text-slate-700">

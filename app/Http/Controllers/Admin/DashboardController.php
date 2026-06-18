@@ -24,30 +24,24 @@ class DashboardController extends Controller
             ->where('status_pembayaran', 'lunas')
             ->sum('total_bayar');
 
-        // Jadwal hari ini berdasarkan tanggal_berangkat
         $jadwalHariIni = Jadwal::whereDate('tanggal_berangkat', $today)->count();
 
-        // Statistik status jadwal
-        $jadwalMenunggu  = Jadwal::where('status', 'menunggu')->count();
-        $jadwalBerangkat = Jadwal::where('status', 'berangkat')->count();
-        $jadwalSelesai   = Jadwal::where('status', 'selesai')->count();
+        $stats = [
+            'total_bus' => $totalBus,
+            'jadwal_hari_ini' => $jadwalHariIni,
+            'transaksi_hari_ini' => $pemesananHariIni,
+            'pendapatan_hari_ini' => $totalPendapatanHariIni,
+        ];
 
-        // 5 pemesanan terbaru
-        $pemesananTerbaru = Pemesanan::with(['jadwal.rute', 'user'])
-            ->latest()
+        $jadwalTerkini = Jadwal::with(['rute', 'bus', 'pool'])
+            ->whereDate('tanggal_berangkat', $today)
+            ->orderBy('waktu_berangkat')
             ->limit(5)
             ->get();
 
         return view('admin.dashboard', compact(
-            'totalBus',
-            'totalJadwal',
-            'pemesananHariIni',
-            'totalPendapatanHariIni',
-            'jadwalHariIni',
-            'jadwalMenunggu',
-            'jadwalBerangkat',
-            'jadwalSelesai',
-            'pemesananTerbaru'
+            'stats',
+            'jadwalTerkini'
         ));
     }
 }

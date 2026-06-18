@@ -15,7 +15,7 @@
         </a>
         <div>
             <h1 class="text-2xl font-bold text-slate-800">Edit Bus</h1>
-            <p class="text-sm text-slate-500 mt-0.5">Perbarui data bus <span class="font-semibold text-slate-700">{{ $bus->no_polisi }}</span></p>
+            <p class="text-sm text-slate-500 mt-0.5">Perbarui data bus <span class="font-semibold text-slate-700">{{ $bus->nomor_polisi }}</span></p>
         </div>
     </div>
 

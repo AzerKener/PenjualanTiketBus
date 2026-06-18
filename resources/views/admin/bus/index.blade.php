@@ -53,7 +53,7 @@
                             {{ $buses->firstItem() + $index }}
                         </td>
                         <td class="px-6 py-4">
-                            <span class="text-sm font-semibold text-slate-800 font-mono">{{ $bus->no_polisi }}</span>
+                            <span class="text-sm font-semibold text-slate-800 font-mono">{{ $bus->nomor_polisi }}</span>
                         </td>
                         <td class="px-6 py-4">
                             @php
@@ -88,7 +88,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            onclick="return confirm('Apakah Anda yakin ingin menghapus bus {{ $bus->no_polisi }}?')"
+                                            onclick="return confirm('Apakah Anda yakin ingin menghapus bus {{ $bus->nomor_polisi }}?')"
                                             class="inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>

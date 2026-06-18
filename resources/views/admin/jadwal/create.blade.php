@@ -58,7 +58,7 @@
                         <option value="" disabled selected>-- Pilih Bus --</option>
                         @foreach($buses as $bus)
                         <option value="{{ $bus->id }}" {{ old('bus_id') == $bus->id ? 'selected' : '' }}>
-                            {{ $bus->no_polisi }} — {{ $bus->tipe_bus }} ({{ $bus->jumlah_kursi }} kursi)
+                            {{ $bus->nomor_polisi }} — {{ $bus->tipe_bus }} ({{ $bus->jumlah_kursi }} kursi)
                         </option>
                         @endforeach
                     </select>

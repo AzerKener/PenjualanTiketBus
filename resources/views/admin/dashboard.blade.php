@@ -112,7 +112,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="text-sm text-slate-700">{{ $jadwal->bus->no_polisi ?? '-' }}</span>
+                            <span class="text-sm text-slate-700">{{ $jadwal->bus->nomor_polisi ?? '-' }}</span>
                             <span class="ml-1.5 text-xs text-slate-400">{{ $jadwal->bus->tipe_bus ?? '' }}</span>
                         </td>
                         <td class="px-6 py-4">
