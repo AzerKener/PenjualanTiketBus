@@ -20,7 +20,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen flex flex-col">
 
 {{-- Navbar --}}
 <nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
@@ -60,6 +60,10 @@
                                 <p class="font-semibold text-slate-800 text-sm">{{ auth()->user()->name }}</p>
                                 <p class="text-xs text-slate-500">{{ auth()->user()->email }}</p>
                             </div>
+                            <a href="{{ route('user.akun.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                Profil Saya
+                            </a>
                             <a href="{{ route('user.riwayat') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 Riwayat Pemesanan
@@ -110,10 +114,12 @@
 @endif
 
 {{-- Main Content --}}
-@yield('content')
+<main class="flex-grow flex flex-col">
+    @yield('content')
+</main>
 
 {{-- Footer --}}
-<footer class="bg-slate-800 text-white mt-16">
+<footer class="bg-slate-800 text-white mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>

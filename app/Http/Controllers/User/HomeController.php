@@ -31,27 +31,29 @@ class HomeController extends Controller
     public function cari(Request $request)
     {
         $request->validate([
-            'asal'             => ['required', 'string'],
-            'tujuan'           => ['required', 'string'],
-            'tanggal_berangkat'=> ['required', 'date', 'after_or_equal:today'],
-        ], [
-            'asal.required'              => 'Kota asal wajib dipilih.',
-            'tujuan.required'            => 'Kota tujuan wajib dipilih.',
-            'tanggal_berangkat.required' => 'Tanggal keberangkatan wajib diisi.',
-            'tanggal_berangkat.after_or_equal' => 'Tanggal tidak boleh di masa lalu.',
+            'asal'             => ['nullable', 'string'],
+            'tujuan'           => ['nullable', 'string'],
+            'tanggal_berangkat'=> ['nullable', 'date', 'after_or_equal:today'],
         ]);
 
         $asalList   = Rute::orderBy('asal')->pluck('asal')->unique()->values();
         $tujuanList = Rute::orderBy('tujuan')->pluck('tujuan')->unique()->values();
 
         $jadwals = Jadwal::with(['bus', 'rute', 'pool', 'penumpangs'])
-            ->whereHas('rute', function ($q) use ($request) {
-                $q->where('asal', $request->asal)
-                  ->where('tujuan', $request->tujuan);
+            ->when($request->filled('asal'), function ($q) use ($request) {
+                $q->whereHas('rute', fn ($r) => $r->where('asal', $request->asal));
             })
-            ->whereDate('tanggal_berangkat', $request->tanggal_berangkat)
+            ->when($request->filled('tujuan'), function ($q) use ($request) {
+                $q->whereHas('rute', fn ($r) => $r->where('tujuan', $request->tujuan));
+            })
+            ->when($request->filled('tanggal_berangkat'), function ($q) use ($request) {
+                $q->whereDate('tanggal_berangkat', $request->tanggal_berangkat);
+            }, function ($q) {
+                $q->whereDate('tanggal_berangkat', '>=', now()->toDateString());
+            })
             ->where('status', 'menunggu')
             ->when($request->filled('tipe_bus'), fn ($q) => $q->whereHas('bus', fn ($b) => $b->where('tipe_bus', $request->tipe_bus)))
+            ->orderBy('tanggal_berangkat')
             ->orderBy('waktu_berangkat')
             ->get()
             ->map(function ($j) {

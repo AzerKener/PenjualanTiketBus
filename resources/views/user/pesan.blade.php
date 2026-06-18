@@ -140,18 +140,22 @@
                             <select x-model="jadwalPulangId"
                                 @change="loadKursiPulang($event.target.value)"
                                 class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">-- Pilih Jadwal Pulang --</option>
-                                @foreach($jadwalPulangList as $jp)
-                                <option value="{{ $jp->id }}"
-                                    data-harga="{{ $jp->harga_tiket }}"
-                                    data-jumlah="{{ $jp->bus->jumlah_kursi }}">
-                                    {{ $jp->rute->tujuan ?? '' }} → {{ $jp->rute->asal ?? '' }} |
-                                    {{ \Carbon\Carbon::parse($jp->tanggal_berangkat)->isoFormat('D MMM') }}
-                                    {{ substr($jp->waktu_berangkat, 0, 5) }} |
-                                    {{ $jp->bus->tipe_bus }} |
-                                    Rp {{ number_format($jp->harga_tiket, 0, ',', '.') }}
-                                </option>
-                                @endforeach
+                                @if($jadwalPulangList->isEmpty())
+                                    <option value="" disabled selected>-- Tidak ada jadwal pulang yang tersedia --</option>
+                                @else
+                                    <option value="">-- Pilih Jadwal Pulang --</option>
+                                    @foreach($jadwalPulangList as $jp)
+                                    <option value="{{ $jp->id }}"
+                                        data-harga="{{ $jp->harga_tiket }}"
+                                        data-jumlah="{{ $jp->bus->jumlah_kursi }}">
+                                        {{ $jp->rute->tujuan ?? '' }} → {{ $jp->rute->asal ?? '' }} |
+                                        {{ \Carbon\Carbon::parse($jp->tanggal_berangkat)->isoFormat('D MMM') }}
+                                        {{ substr($jp->waktu_berangkat, 0, 5) }} |
+                                        {{ $jp->bus->tipe_bus }} |
+                                        Rp {{ number_format($jp->harga_tiket, 0, ',', '.') }}
+                                    </option>
+                                    @endforeach
+                                @endif
                             </select>
                         </div>
 
