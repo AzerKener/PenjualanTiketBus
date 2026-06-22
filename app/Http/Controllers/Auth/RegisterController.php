@@ -28,17 +28,9 @@ class RegisterController extends Controller
             'no_hp'                 => ['required', 'string', 'max:20'],
             'password'              => ['required', 'min:8', 'confirmed'],
             'password_confirmation' => ['required'],
-        ], [
-            'name.required'      => 'Nama lengkap wajib diisi.',
-            'email.required'     => 'Email wajib diisi.',
-            'email.unique'       => 'Email sudah terdaftar.',
-            'no_hp.required'     => 'No. HP wajib diisi.',
-            'password.required'  => 'Password wajib diisi.',
-            'password.min'       => 'Password minimal 8 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        $user = User::create([
+        User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
             'no_hp'    => $validated['no_hp'],
@@ -46,9 +38,8 @@ class RegisterController extends Controller
             'role'     => 'User',
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('user.home')->with('success', 'Akun berhasil dibuat! Selamat datang, ' . $user->name . '.');
+        return redirect()->route('user.login')
+            ->with('success', 'Registrasi berhasil! Silakan login menggunakan akun yang baru dibuat.');
     }
 
     /** Tampilkan form login user online */
@@ -79,7 +70,7 @@ class RegisterController extends Controller
             }
 
             return redirect()->intended(route('user.home'))
-                ->with('success', 'Selamat datang kembali, ' . $user->name . '!');
+                ->with('success', 'Selamat datang, ' . $user->name . '!');
         }
 
         return back()->withErrors([

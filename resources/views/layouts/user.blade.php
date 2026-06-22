@@ -38,12 +38,6 @@
             <div class="flex items-center gap-3">
                 @auth
                     @if(auth()->user()->role === 'User')
-                    <a href="{{ route('user.riwayat') }}" class="hidden sm:flex items-center gap-1.5 text-sm text-slate-600 hover:text-blue-600 transition-colors font-medium">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                        Riwayat
-                    </a>
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition-colors">
                             <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -119,7 +113,7 @@
 </main>
 
 {{-- Footer --}}
-<footer class="bg-slate-800 text-white mt-auto">
+{{-- <footer class="bg-slate-800 text-white mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
@@ -138,7 +132,7 @@
             </div>
         </div>
     </div>
-</footer>
+</footer> --}}
 
 @stack('scripts')
 </body>
