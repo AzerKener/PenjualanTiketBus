@@ -53,11 +53,6 @@
             {{-- Kiri: Denah Kursi --}}
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                 <h2 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-base">
-                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                        </svg>
-                    </div>
                     Pilih Kursi
                 </h2>
 

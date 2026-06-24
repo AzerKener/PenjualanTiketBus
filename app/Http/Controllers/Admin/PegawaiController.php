@@ -12,9 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 class PegawaiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pegawais = Pegawai::with('pool')->latest()->paginate(10);
+        $query = Pegawai::with('pool');
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+    }
+
+        $pegawais = $query->latest()->paginate(10);
 
         return view('admin.pegawai.index', compact('pegawais'));
     }
