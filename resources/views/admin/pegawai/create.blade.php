@@ -63,6 +63,7 @@
                     <option value="" disabled selected>-- Pilih Role --</option>
                     <option value="Supir" {{ old('role') == 'Supir' ? 'selected' : '' }}>Supir</option>
                     <option value="Kenek" {{ old('role') == 'Kenek' ? 'selected' : '' }}>Kenek</option>
+                    <option value="Sales" {{ old('role') == 'Sales' ? 'selected' : '' }}>Sales</option>
                     <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
                 </select>
                 @error('role')
@@ -104,6 +105,42 @@
                 @error('no_hp')
                 <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                 @enderror
+            </div>
+
+            {{-- Divider akun login --}}
+            <div class="border-t border-slate-100 pt-4">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Akun Login</p>
+
+                {{-- Email --}}
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1">
+                        Email <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           value="{{ old('email') }}"
+                           placeholder="Contoh: budi@busticket.com"
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('email') border-red-400 @enderror">
+                    @error('email')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Password --}}
+                <div>
+                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1">
+                        Password <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           placeholder="Minimal 6 karakter"
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('password') border-red-400 @enderror">
+                    @error('password')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             {{-- Actions --}}

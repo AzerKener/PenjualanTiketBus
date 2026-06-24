@@ -28,7 +28,7 @@ class PegawaiController extends Controller
     public function create()
     {
         $pools      = Pool::orderBy('nama_pool')->get();
-        $roleOptions = ['Supir', 'Kenek', 'Admin'];
+        $roleOptions = ['Supir', 'Kenek', 'Sales', 'Admin'];
 
         return view('admin.pegawai.create', compact('pools', 'roleOptions'));
     }
@@ -37,7 +37,7 @@ class PegawaiController extends Controller
     {
         $validated = $request->validate([
             'nama'    => 'required|string|max:100',
-            'role'    => 'required|in:Supir,Kenek,Admin',
+            'role'    => 'required|in:Supir,Kenek,Sales,Admin',
             'pool_id' => 'required|exists:pools,id',
             'no_hp'   => 'required|string|max:20|regex:/^[0-9+\-\s]+$/',
             'email'   => 'required|email|unique:users,email',
@@ -83,7 +83,7 @@ class PegawaiController extends Controller
     public function edit(Pegawai $pegawai)
     {
         $pools      = Pool::orderBy('nama_pool')->get();
-        $roleOptions = ['Supir', 'Kenek', 'Admin'];
+        $roleOptions = ['Supir', 'Kenek', 'Sales', 'Admin'];
 
         return view('admin.pegawai.edit', compact('pegawai', 'pools', 'roleOptions'));
     }
@@ -92,7 +92,7 @@ class PegawaiController extends Controller
     {
         $validated = $request->validate([
             'nama'    => 'required|string|max:100',
-            'role'    => 'required|in:Supir,Kenek,Admin',
+            'role'    => 'required|in:Supir,Kenek,Sales,Admin',
             'pool_id' => 'required|exists:pools,id',
             'no_hp'   => 'required|string|max:20|regex:/^[0-9+\-\s]+$/',
             'email'   => 'required|email|unique:users,email,' . ($pegawai->user_id ?? 'NULL'),
