@@ -125,7 +125,7 @@
                             class="w-5 h-5 rounded text-blue-600 border-slate-300 mt-0.5 flex-shrink-0">
                         <div>
                             <p class="font-semibold text-slate-700 group-hover:text-blue-600 transition-colors text-sm">Tiket Pulang-Pergi</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Tambah perjalanan kembali (diskon kursi sama)</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Tambah perjalanan kembali</p>
                         </div>
                     </label>
 
@@ -195,7 +195,6 @@
                             </svg>
                         </div>
                         Data Penumpang
-                        <span class="text-xs text-blue-600 font-normal">(pergi)</span>
                     </h2>
 
                     <div x-show="dipilih.length === 0" class="text-sm text-slate-400 text-center py-8 flex flex-col items-center gap-2">
@@ -491,9 +490,9 @@
 
                         <div class="border-t border-slate-700 pt-4 mb-5">
                             <div class="flex items-center justify-between">
-                                <span class="text-slate-300 text-sm">Grand Total</span>
+                                <span class="text-slate-300 text-sm">Grand Total </span>
                                 <span class="text-2xl font-extrabold text-green-400"
-                                      x-text="'Rp ' + totalHarga().toLocaleString('id-ID')">
+                                      x-text="' Rp ' + totalHarga().toLocaleString('id-ID')">
                                 </span>
                             </div>
                             <p x-show="metodePembayaran === 'Cash'" x-cloak
