@@ -27,6 +27,20 @@
         </div>
     </div>
 
+    @php
+    $berangkat = \Carbon\Carbon::parse($jadwal->waktu_berangkat);
+
+    if(!empty($jadwal->estimasi_tiba)){
+        $tiba = \Carbon\Carbon::parse($jadwal->estimasi_tiba);
+
+        if($tiba->lessThan($berangkat)){
+            $tiba->addDay();
+        }
+
+        $durasi = $berangkat->diff($tiba);
+    }
+@endphp
+
     {{-- Info Jadwal --}}
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl p-5 mb-6 shadow-lg">
         <div class="flex flex-wrap items-center justify-between gap-4">
@@ -37,6 +51,73 @@
                     {{ \Carbon\Carbon::parse($jadwal->tanggal_berangkat)->isoFormat('dddd, D MMMM Y') }}
                     • {{ substr($jadwal->waktu_berangkat, 0, 5) }} WIB
                 </p>
+                <div class="grid grid-cols-3 gap-2 mt-4">
+
+    {{-- Estimasi Tiba --}}
+    @if(!empty($jadwal->estimasi_tiba))
+    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+                🕒
+            </div>
+
+            <div>
+                <p class="text-[10px] uppercase tracking-wide text-blue-100">
+                    Estimasi Tiba
+                </p>
+
+                <p class="text-sm font-bold text-white">
+                    {{ substr($jadwal->estimasi_tiba,0,5) }}
+                </p>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Durasi --}}
+    @if(!empty($jadwal->estimasi_tiba))
+    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+                ⏱
+            </div>
+
+            <div>
+                <p class="text-[10px] uppercase tracking-wide text-blue-100">
+                    Durasi
+                </p>
+
+                <p class="text-sm font-bold text-white">
+                    {{ $durasi->h }}j {{ $durasi->i }}m
+                </p>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Kursi --}}
+    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+                🪑
+            </div>
+
+            <div>
+                <p class="text-[10px] uppercase tracking-wide text-blue-100">
+                    Tersedia
+                </p>
+
+                <p class="text-sm font-bold text-white">
+                    {{ $kursiTersedia }}
+                    <span class="text-blue-200 font-normal text-xs">
+                        / {{ $jumlahKursi }}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
             </div>
             <div class="text-right">
                 <p class="text-blue-200 text-sm">{{ $jadwal->bus->nomor_polisi }} ({{ $jadwal->bus->tipe_bus }})</p>

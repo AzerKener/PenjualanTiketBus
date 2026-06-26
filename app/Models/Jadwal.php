@@ -8,7 +8,7 @@ class Jadwal extends Model
 {
     protected $fillable = [
         'bus_id', 'rute_id', 'pool_id',
-        'tanggal_berangkat', 'waktu_berangkat',
+        'tanggal_berangkat', 'waktu_berangkat', 'estimasi_tiba',
         'harga_tiket', 'supir1_id', 'supir2_id', 'kenek_id', 'status',
     ];
 
