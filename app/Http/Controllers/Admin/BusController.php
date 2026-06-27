@@ -38,11 +38,52 @@ class BusController extends Controller
             'jumlah_kursi.min'      => 'Jumlah kursi minimal 1.',
         ]);
 
+        $validated['fasilitas_bus'] = implode(',', $request->fasilitas_bus ?? []);
+
         Bus::create($validated);
 
         return redirect()->route('admin.bus.index')
             ->with('success', 'Bus berhasil ditambahkan.');
     }
+
+    public function getFasilitasAttribute()
+{
+    return match ($this->tipe_bus) {
+
+        'Ekonomi' => [
+            ['icon' => '❄️', 'nama' => 'AC'],
+            ['icon' => '🧳', 'nama' => 'Bagasi Gratis 20 Kg'],
+            ['icon' => '💧', 'nama' => 'Air Mineral'],
+        ],
+
+        'VIP' => [
+            ['icon' => '❄️', 'nama' => 'AC'],
+            ['icon' => '📶', 'nama' => 'WiFi'],
+            ['icon' => '🔌', 'nama' => 'USB Charger'],
+            ['icon' => '💺', 'nama' => 'Reclining Seat'],
+            ['icon' => '🧳', 'nama' => 'Bagasi Gratis 20 Kg'],
+            ['icon' => '💧', 'nama' => 'Air Mineral'],
+            ['icon' => '🛏️', 'nama' => 'Selimut'],
+        ],
+
+        'Executive' => [
+            ['icon' => '❄️', 'nama' => 'AC'],
+            ['icon' => '📶', 'nama' => 'WiFi'],
+            ['icon' => '🔌', 'nama' => 'USB Charger'],
+            ['icon' => '📺', 'nama' => 'TV'],
+            ['icon' => '🍱', 'nama' => 'Snack'],
+            ['icon' => '🧳', 'nama' => 'Bagasi Gratis 20 Kg'],
+            ['icon' => '🚻', 'nama' => 'Toilet'],
+            ['icon' => '💺', 'nama' => 'Reclining Seat'],
+            ['icon' => '🦶', 'nama' => 'Foot Rest'],
+            ['icon' => '💧', 'nama' => 'Air Mineral'],
+            ['icon' => '🛏️', 'nama' => 'Selimut'],
+            ['icon' => '🛌', 'nama' => 'Bantal'],
+        ],
+
+        default => [],
+    };
+}
 
     public function edit(Bus $bus)
     {
@@ -66,6 +107,8 @@ class BusController extends Controller
             'jumlah_kursi.integer'  => 'Jumlah kursi harus berupa angka.',
             'jumlah_kursi.min'      => 'Jumlah kursi minimal 1.',
         ]);
+
+        $validated['fasilitas_bus'] = implode(',', $request->fasilitas_bus ?? []);
 
         $bus->update($validated);
 

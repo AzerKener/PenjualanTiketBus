@@ -39,7 +39,7 @@
 
         $durasi = $berangkat->diff($tiba);
     }
-@endphp
+    @endphp
 
     {{-- Info Jadwal --}}
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl p-5 mb-6 shadow-lg">
@@ -116,7 +116,6 @@
             </div>
         </div>
     </div>
-
 </div>
             </div>
             <div class="text-right">
@@ -126,6 +125,56 @@
             </div>
         </div>
     </div>
+
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+
+    <div class="flex items-center justify-between mb-5">
+
+        <div>
+            <h2 class="text-lg font-bold text-slate-800">
+                ✨ Fasilitas Bus
+            </h2>
+
+            <p class="text-sm text-slate-500 mt-1">
+                Fasilitas yang tersedia pada bus {{ $jadwal->bus->tipe_bus }}
+            </p>
+        </div>
+
+        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+            {{ $jadwal->bus->tipe_bus }}
+        </span>
+
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+
+        @foreach($jadwal->bus->fasilitas as $item)
+
+        <div
+            class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition p-4">
+
+            <div
+                class="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
+
+                {{ $item['icon'] }}
+
+            </div>
+
+            <div>
+
+                <p class="font-semibold text-slate-700">
+                    {{ $item['nama'] }}
+                </p>
+
+            </div>
+
+        </div>
+
+        @endforeach
+
+    </div>
+
+</div>
 
     {{-- ═══ STEP 1: Pilih Kursi + Data Penumpang ═══ --}}
     <div x-show="step === 1">
@@ -325,6 +374,52 @@
                                     class="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
                             </div>
                         </template>
+                    </div>
+                </div>
+
+                                {{-- Bagasi --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                    <h2 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-base">
+                        <div class="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center">
+                            🧳
+                        </div>
+                        Bagasi
+                    </h2>
+
+                    <div class="space-y-4">
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-slate-700">
+                                    Gratis 20 Kg
+                                </p>
+                                <p class="text-xs text-slate-500">
+                                    Tambahan bagasi dikenakan biaya Rp10.000/Kg
+                                </p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-slate-700">
+                                Tambahan Bagasi (Kg)
+                            </label>
+
+                            <input
+                                type="number"
+                                min="0"
+                                x-model.number="bagasi"
+                                placeholder="0"
+                                class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="flex justify-between text-sm">
+                            <span>Biaya Bagasi</span>
+
+                            <span class="font-bold text-blue-600"
+                                x-text="'Rp ' + (bagasi*10000).toLocaleString('id-ID')">
+                            </span>
+                        </div>
+
                     </div>
                 </div>
 
@@ -611,6 +706,7 @@ function pemesanan(semuaKursi, kursiTerisi, jadwalId, hargaPergi) {
         step: 1,
         semuaKursi,
         terisi: kursiTerisi,
+        bagasi: 0,
         dipilih: [],
         namaPenumpangPergi: [],
         isRoundTrip: false,
@@ -704,12 +800,18 @@ function pemesanan(semuaKursi, kursiTerisi, jadwalId, hargaPergi) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
-        totalHarga() {
-            const pergi = this.dipilih.length * this.hargaPergi;
-            const pulang = (this.isRoundTrip && this.dipilihPulang.length > 0)
-                ? this.dipilihPulang.length * this.hargaPulang : 0;
-            return pergi + pulang;
-        }
+totalHarga() {
+    const pergi = this.dipilih.length * this.hargaPergi;
+
+    const pulang =
+        (this.isRoundTrip && this.dipilihPulang.length > 0)
+            ? this.dipilihPulang.length * this.hargaPulang
+            : 0;
+
+    const biayaBagasi = this.bagasi * 10000;
+
+    return pergi + pulang + biayaBagasi;
+}
     }
 }
 </script>
