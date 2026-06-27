@@ -84,7 +84,7 @@
 
             <div>
                 <p class="text-[10px] uppercase tracking-wide text-blue-100">
-                    Durasi
+                    Durasi Perjalanan
                 </p>
 
                 <p class="text-sm font-bold text-white">
@@ -99,12 +99,12 @@
     <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
-                🪑
+                💺
             </div>
 
             <div>
                 <p class="text-[10px] uppercase tracking-wide text-blue-100">
-                    Tersedia
+                    Kursi Tersedia
                 </p>
 
                 <p class="text-sm font-bold text-white">
@@ -316,7 +316,7 @@
             {{-- Kanan: Form Data Penumpang --}}
             <div class="space-y-4">
 
-                {{-- Penumpang Pergi --}}
+                {{-- Penumpang Pergi --}}   
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                     <h2 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-base">
                         <div class="w-7 h-7 bg-slate-100 rounded-lg flex items-center justify-center">
@@ -324,8 +324,33 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
-                        Data Penumpang
+                            Data Penumpang
                     </h2>
+
+                {{-- Info kursi dipilih --}}
+                <div
+                    x-show="dipilih.length > 0"
+                    x-cloak
+                    class="mb-4 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+                <div>
+                    <p class="text-sm font-semibold text-blue-700">
+                        <span x-text="dipilih.length"></span> Kursi Dipilih
+                    </p>
+                <p class="text-xs text-slate-500">
+                    Silakan isi nama sesuai identitas penumpang.
+                </p>
+                </div>
+
+    <div class="flex flex-wrap gap-1">
+        <template x-for="kursi in dipilih" :key="'badge-'+kursi">
+            <span
+                class="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold"
+                x-text="kursi">
+            </span>
+        </template>
+    </div>
+
+</div>
 
                     <div x-show="dipilih.length === 0" class="text-sm text-slate-400 text-center py-8 flex flex-col items-center gap-2">
                         <svg class="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -661,6 +686,18 @@
                                     <span></span>
                                     <span x-text="'Rp ' + (dipilihPulang.length * hargaPulang).toLocaleString('id-ID')"></span>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-slate-700 pt-2 mt-2">
+                            <div class="flex justify-between text-slate-300">
+                                <span>Tambahan Bagasi</span>
+                                    <span x-text="bagasi + ' Kg'"></span>
+                            </div>
+                        <div class="flex justify-between text-slate-300 font-medium">
+                            <span></span>
+                        <span
+                            x-text="'Rp ' + (bagasi * 10000).toLocaleString('id-ID')">
+                        </span>
                             </div>
                         </div>
 
