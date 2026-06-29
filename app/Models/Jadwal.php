@@ -10,6 +10,7 @@ class Jadwal extends Model
         'bus_id', 'rute_id', 'pool_id', 'pool_tujuan_id',
         'tanggal_berangkat', 'waktu_berangkat', 'estimasi_tiba',
         'harga_tiket', 'supir1_id', 'supir2_id', 'kenek_id', 'status',
+        'keterangan'
     ];
 
     protected $casts = [

@@ -156,6 +156,11 @@
                                         <option value="selesai" {{ $status == 'selesai' ? 'selected' : '' }}>Selesai</option>
                                     </select>
                                 </form>
+                                @if($jadwal->keterangan)
+                                    <div class="mt-1 text-[10px] text-red-600 bg-red-50 p-1 rounded border border-red-100 leading-tight">
+                                        {{ $jadwal->keterangan }}
+                                    </div>
+                                @endif
                             </div>
                         </td>
                         <td class="px-4 py-3">

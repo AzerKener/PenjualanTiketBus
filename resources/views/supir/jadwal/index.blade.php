@@ -59,23 +59,24 @@
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             {{-- Status Badge --}}
             <div>
-                @if($jadwal->status === 'menunggu')
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
-                        <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>Menunggu
-                    </span>
-                @elseif($jadwal->status === 'boarding')
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-                        <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>Boarding
-                    </span>
-                @elseif($jadwal->status === 'berangkat')
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>Berangkat
-                    </span>
-                @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>Tiba / Selesai
-                    </span>
-                @endif
+                <form action="{{ route('supir.jadwal.updateStatus', $jadwal->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <select name="status"
+                            onchange="this.form.submit()"
+                            class="border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 bg-slate-50 text-slate-700 transition
+                                {{ $jadwal->status === 'menunggu' ? 'bg-slate-100 text-slate-700' : '' }}
+                                {{ $jadwal->status === 'boarding' ? 'bg-amber-100 text-amber-700' : '' }}
+                                {{ $jadwal->status === 'berangkat' ? 'bg-blue-100 text-blue-700' : '' }}
+                                {{ in_array($jadwal->status, ['tiba', 'selesai']) ? 'bg-green-100 text-green-700' : '' }}
+                            ">
+                        <option value="menunggu" {{ $jadwal->status == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
+                        <option value="boarding" {{ $jadwal->status == 'boarding' ? 'selected' : '' }}>Boarding</option>
+                        <option value="berangkat" {{ $jadwal->status == 'berangkat' ? 'selected' : '' }}>Berangkat</option>
+                        <option value="tiba" {{ $jadwal->status == 'tiba' ? 'selected' : '' }}>Tiba</option>
+                        <option value="selesai" {{ $jadwal->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                    </select>
+                </form>
             </div>
             {{-- Date --}}
             <p class="text-sm font-medium text-slate-500">

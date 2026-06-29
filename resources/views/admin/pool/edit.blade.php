@@ -93,6 +93,13 @@
                 </div>
             </div>
 
+            {{-- Map Picker --}}
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Pilih Lokasi di Peta</label>
+                <div id="map" class="w-full h-64 rounded-xl border border-slate-200 z-10"></div>
+                <p class="text-xs text-slate-500 mt-1">Klik pada peta untuk mengubah Latitude dan Longitude.</p>
+            </div>
+
             {{-- Actions --}}
             <div class="flex items-center gap-3 pt-2">
                 <button type="submit"
@@ -109,4 +116,57 @@
     </div>
 
 </div>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var latInput = document.getElementById('latitude');
+        var lngInput = document.getElementById('longitude');
+        var lokasiInput = document.getElementById('lokasi');
+
+        // Default setView (bisa di Indonesia atau lokasi saat ini)
+        var initialLat = latInput.value ? parseFloat(latInput.value) : -2.5489;
+        var initialLng = lngInput.value ? parseFloat(lngInput.value) : 118.0149;
+        var initialZoom = latInput.value ? 15 : 5;
+
+        var map = L.map('map').setView([initialLat, initialLng], initialZoom);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var marker = null;
+
+        if (latInput.value && lngInput.value) {
+            marker = L.marker([initialLat, initialLng]).addTo(map);
+        }
+
+        map.on('click', function (e) {
+            var lat = e.latlng.lat.toFixed(8);
+            var lng = e.latlng.lng.toFixed(8);
+
+            latInput.value = lat;
+            lngInput.value = lng;
+
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+
+            // Ambil alamat dari koordinat (Reverse Geocoding)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        lokasiInput.value = data.display_name;
+                    }
+                })
+                .catch(error => console.error('Error fetching address:', error));
+        });
+    });
+</script>
 @endsection

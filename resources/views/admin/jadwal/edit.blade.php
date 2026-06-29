@@ -82,7 +82,7 @@
                             class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('rute_id') border-red-400 @enderror">
                         <option value="" disabled>-- Pilih Rute --</option>
                         @foreach($rutes as $rute)
-                        <option value="{{ $rute->id }}" {{ old('rute_id', $jadwal->rute_id) == $rute->id ? 'selected' : '' }}>
+                        <option value="{{ $rute->id }}" data-asal="{{ $rute->asal }}" data-tujuan="{{ $rute->tujuan }}" {{ old('rute_id', $jadwal->rute_id) == $rute->id ? 'selected' : '' }}>
                             {{ $rute->asal }} → {{ $rute->tujuan }}
                         </option>
                         @endforeach
@@ -102,7 +102,7 @@
                             class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('pool_id') border-red-400 @enderror">
                         <option value="" disabled>-- Pilih Pool Asal --</option>
                         @foreach($pools as $pool)
-                        <option value="{{ $pool->id }}" {{ old('pool_id', $jadwal->pool_id) == $pool->id ? 'selected' : '' }}>
+                        <option value="{{ $pool->id }}" data-lokasi="{{ $pool->lokasi }}" {{ old('pool_id', $jadwal->pool_id) == $pool->id ? 'selected' : '' }}>
                             {{ $pool->nama_pool }}
                         </option>
                         @endforeach
@@ -122,7 +122,7 @@
                             class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('pool_tujuan_id') border-red-400 @enderror">
                         <option value="" disabled>-- Pilih Pool Tujuan --</option>
                         @foreach($pools as $pool)
-                        <option value="{{ $pool->id }}" {{ old('pool_tujuan_id', $jadwal->pool_tujuan_id) == $pool->id ? 'selected' : '' }}>
+                        <option value="{{ $pool->id }}" data-lokasi="{{ $pool->lokasi }}" {{ old('pool_tujuan_id', $jadwal->pool_tujuan_id) == $pool->id ? 'selected' : '' }}>
                             {{ $pool->nama_pool }}
                         </option>
                         @endforeach
@@ -190,7 +190,7 @@
                             class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('supir1_id') border-red-400 @enderror">
                         <option value="" disabled>-- Pilih Supir --</option>
                         @foreach($supirs as $supir)
-                        <option value="{{ $supir->id }}" {{ old('supir1_id', $jadwal->supir1_id) == $supir->id ? 'selected' : '' }}>
+                        <option value="{{ $supir->id }}" data-pool="{{ $supir->pool_id }}" {{ old('supir1_id', $jadwal->supir1_id) == $supir->id ? 'selected' : '' }}>
                             {{ $supir->nama }}
                         </option>
                         @endforeach
@@ -210,7 +210,7 @@
                             class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('supir2_id') border-red-400 @enderror">
                         <option value="">-- Tidak Ada --</option>
                         @foreach($supirs as $supir)
-                        <option value="{{ $supir->id }}" {{ old('supir2_id', $jadwal->supir2_id) == $supir->id ? 'selected' : '' }}>
+                        <option value="{{ $supir->id }}" data-pool="{{ $supir->pool_id }}" {{ old('supir2_id', $jadwal->supir2_id) == $supir->id ? 'selected' : '' }}>
                             {{ $supir->nama }}
                         </option>
                         @endforeach
@@ -230,7 +230,7 @@
                             class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('kenek_id') border-red-400 @enderror">
                         <option value="">-- Tidak Ada --</option>
                         @foreach($keneks as $kenek)
-                        <option value="{{ $kenek->id }}" {{ old('kenek_id', $jadwal->kenek_id) == $kenek->id ? 'selected' : '' }}>
+                        <option value="{{ $kenek->id }}" data-pool="{{ $kenek->pool_id }}" {{ old('kenek_id', $jadwal->kenek_id) == $kenek->id ? 'selected' : '' }}>
                             {{ $kenek->nama }}
                         </option>
                         @endforeach
@@ -258,4 +258,65 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ruteSelect = document.getElementById('rute_id');
+        const poolAsalSelect = document.getElementById('pool_id');
+        const poolTujuanSelect = document.getElementById('pool_tujuan_id');
+
+        // Simpan semua opsi pool ke dalam array agar mudah difilter
+        const allPoolAsalOptions = Array.from(poolAsalSelect.options).filter(opt => opt.value !== "");
+        const allPoolTujuanOptions = Array.from(poolTujuanSelect.options).filter(opt => opt.value !== "");
+
+        function updatePools() {
+            const selectedRute = ruteSelect.options[ruteSelect.selectedIndex];
+            
+            if (!selectedRute.value) return;
+
+            const asal = selectedRute.getAttribute('data-asal').toLowerCase();
+            const tujuan = selectedRute.getAttribute('data-tujuan').toLowerCase();
+
+            // Filter Pool Asal
+            let firstAsalFound = false;
+            allPoolAsalOptions.forEach(opt => {
+                const lokasi = opt.getAttribute('data-lokasi').toLowerCase();
+                // Tampilkan jika lokasi mengandung nama asal (misal "Jakarta Timur" mengandung "Jakarta")
+                if (lokasi.includes(asal)) {
+                    opt.style.display = '';
+                    if (!firstAsalFound && poolAsalSelect.value === "") {
+                        firstAsalFound = true;
+                    }
+                } else {
+                    opt.style.display = 'none';
+                    if (poolAsalSelect.value === opt.value) {
+                        poolAsalSelect.value = ""; // Reset jika yang terpilih disembunyikan
+                    }
+                }
+            });
+
+            // Filter Pool Tujuan
+            let firstTujuanFound = false;
+            allPoolTujuanOptions.forEach(opt => {
+                const lokasi = opt.getAttribute('data-lokasi').toLowerCase();
+                if (lokasi.includes(tujuan)) {
+                    opt.style.display = '';
+                } else {
+                    opt.style.display = 'none';
+                    if (poolTujuanSelect.value === opt.value) {
+                        poolTujuanSelect.value = "";
+                    }
+                }
+            });
+        }
+
+        // Jalankan saat rute berubah
+        ruteSelect.addEventListener('change', updatePools);
+
+        // Jalankan saat pertama kali dimuat
+        if (ruteSelect.value) {
+            updatePools();
+        }
+    });
+</script>
 @endsection

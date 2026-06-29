@@ -31,6 +31,8 @@ class PemesananController extends Controller
             'tipe_bus'          => 'nullable|string|in:Ekonomi,Bisnis,Eksekutif',
         ]);
 
+        $pegawai = \App\Models\Pegawai::where('user_id', Auth::id())->first();
+
         $query = Jadwal::with(['bus', 'rute', 'pool', 'penumpangs'])
             ->whereHas('rute', function ($q) use ($request) {
                 $q->where('asal', $request->asal)
@@ -38,6 +40,10 @@ class PemesananController extends Controller
             })
             ->whereDate('tanggal_berangkat', $request->tanggal_berangkat)
             ->whereNotIn('status', ['selesai', 'dibatalkan']);
+
+        if ($pegawai && $pegawai->pool_id) {
+            $query->where('pool_id', $pegawai->pool_id);
+        }
 
         if ($request->filled('tipe_bus')) {
             $query->whereHas('bus', fn($q) => $q->where('tipe_bus', $request->tipe_bus));

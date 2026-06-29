@@ -23,6 +23,12 @@ Route::get('/', function () {
     return redirect()->route('user.home');
 });
 
+// ─── Shared Authenticated Routes ──────────────────────────────────────────────
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifikasi', [\App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::post('/notifikasi/clear', [\App\Http\Controllers\NotifikasiController::class, 'clear'])->name('notifikasi.clear');
+});
+
 // ─── Webhook Routes ─────────────────────────────────────────────────────────────
 Route::post('/webhook/midtrans', [App\Http\Controllers\Webhook\MidtransController::class, 'webhook'])->name('webhook.midtrans');
 

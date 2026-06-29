@@ -92,6 +92,13 @@
                 </div>
             </div>
 
+            {{-- Map Picker --}}
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Pilih Lokasi di Peta</label>
+                <div id="map" class="w-full h-64 rounded-xl border border-slate-200 z-10"></div>
+                <p class="text-xs text-slate-500 mt-1">Klik pada peta untuk otomatis mengisi Latitude dan Longitude.</p>
+            </div>
+
             {{-- Actions --}}
             <div class="flex items-center gap-3 pt-2">
                 <button type="submit"
@@ -108,4 +115,59 @@
     </div>
 
 </div>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Inisialisasi Peta (Default ke pusat Indonesia)
+        var map = L.map('map').setView([-2.5489, 118.0149], 5);
+
+        // Tambahkan TileLayer dari OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var marker = null;
+        var latInput = document.getElementById('latitude');
+        var lngInput = document.getElementById('longitude');
+        var lokasiInput = document.getElementById('lokasi');
+
+        // Jika sudah ada isian (misal gagal validasi), taruh marker
+        if (latInput.value && lngInput.value) {
+            var latLng = [parseFloat(latInput.value), parseFloat(lngInput.value)];
+            marker = L.marker(latLng).addTo(map);
+            map.setView(latLng, 15);
+        }
+
+        // Event saat peta diklik
+        map.on('click', function (e) {
+            var lat = e.latlng.lat.toFixed(8);
+            var lng = e.latlng.lng.toFixed(8);
+
+            // Update Input
+            latInput.value = lat;
+            lngInput.value = lng;
+
+            // Pindahkan atau buat marker baru
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+
+            // Ambil alamat dari koordinat (Reverse Geocoding)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        lokasiInput.value = data.display_name;
+                    }
+                })
+                .catch(error => console.error('Error fetching address:', error));
+        });
+    });
+</script>
 @endsection

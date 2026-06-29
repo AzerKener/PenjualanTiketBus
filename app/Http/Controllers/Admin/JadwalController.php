@@ -276,6 +276,42 @@ class JadwalController extends Controller
 
         $jadwal->update(['status' => $statusBaru]);
 
+        if ($statusBaru === 'selesai' && $statusLama !== 'selesai') {
+            // 1. Kirim ucapan terima kasih ke penumpang
+            $pemesanans = \App\Models\Pemesanan::where('jadwal_id', $jadwal->id)
+                ->where('status_pembayaran', 'lunas')
+                ->with('user')
+                ->get();
+            
+            $usersNotified = [];
+            foreach ($pemesanans as $pesanan) {
+                if ($pesanan->user && !in_array($pesanan->user_id, $usersNotified)) {
+                    $pesanan->user->notify(new \App\Notifications\PerjalananSelesai($jadwal));
+                    $usersNotified[] = $pesanan->user_id;
+                }
+            }
+
+            // 2. Kirim jadwal selanjutnya ke petugas (Supir1, Supir2, Kenek)
+            $petugas = [$jadwal->supir1, $jadwal->supir2, $jadwal->kenek];
+            foreach ($petugas as $p) {
+                if ($p && $p->user) {
+                    $nextJadwal = \App\Models\Jadwal::where(function($q) use ($p) {
+                            $q->where('supir1_id', $p->id)
+                              ->orWhere('supir2_id', $p->id)
+                              ->orWhere('kenek_id', $p->id);
+                        })
+                        ->where('status', 'menunggu')
+                        ->whereRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) > ?", [\Carbon\Carbon::now()])
+                        ->orderByRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) ASC")
+                        ->first();
+                        
+                    if ($nextJadwal) {
+                        $p->user->notify(new \App\Notifications\JadwalSelanjutnya($nextJadwal));
+                    }
+                }
+            }
+        }
+
         return redirect()->route('admin.jadwal.index')
             ->with('success', 'Status jadwal berhasil diubah menjadi "' . $statusBaru . '".');
     }
