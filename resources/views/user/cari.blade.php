@@ -87,6 +87,13 @@
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         Sisa {{ $j->kursi_tersedia }} kursi
                     </span>
+                    @if($j->ratings_count > 0)
+                        <span class="flex items-center gap-1">
+                            <span class="text-yellow-500">⭐</span> 
+                            <span class="font-bold text-slate-700">{{ number_format($j->ratings_avg_rating, 1) }}</span>
+                            <span class="text-slate-400">({{ $j->ratings_count }})</span>
+                        </span>
+                    @endif
                 </div>
             </div>
 

@@ -23,6 +23,9 @@ Route::get('/', function () {
     return redirect()->route('user.home');
 });
 
+// ─── Webhook Routes ─────────────────────────────────────────────────────────────
+Route::post('/webhook/midtrans', [App\Http\Controllers\Webhook\MidtransController::class, 'webhook'])->name('webhook.midtrans');
+
 // ─── Auth Routes (Staff: Admin / Sales / Supir) ───────────────────────────────
 Route::get('/login',   [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login',  [LoginController::class, 'login'])->name('login.post');
@@ -50,6 +53,10 @@ Route::prefix('tiket')->name('user.')->group(function () {
         Route::get('/tiket/{pemesanan}',         [User\PemesananController::class, 'etiket'])->name('etiket');
         Route::get('/kursi-terisi/{jadwal}',     [User\PemesananController::class, 'getKursiTerisi'])->name('kursiTerisi');
         Route::post('/jadwal-pulang',            [User\PemesananController::class, 'getJadwalPulang'])->name('jadwalPulang');
+        
+        // Rating
+        Route::get('/rating/{jadwal}',           [\App\Http\Controllers\RatingController::class, 'create'])->name('rating.create');
+        Route::post('/rating/{jadwal}',          [\App\Http\Controllers\RatingController::class, 'store'])->name('rating.store');
     });
 });
 
@@ -70,6 +77,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:Admin'])->grou
     Route::get('/laporan/export-csv', [Admin\LaporanController::class, 'exportCsv'])->name('laporan.exportCsv');
     Route::get('/transaksi', [Admin\TransaksiController::class,  'index'])->name('transaksi.index');
     Route::patch('/transaksi/{pemesanan}/konfirmasi', [Admin\TransaksiController::class, 'konfirmasi'])->name('transaksi.konfirmasi');
+    
+    Route::get('/rating',    [Admin\RatingController::class, 'index'])->name('rating.index');
+    
     Route::get('/akun',      [Admin\AkunController::class,       'index'])->name('akun.index');
 });
 
@@ -92,6 +102,8 @@ Route::prefix('sales')->name('sales.')->middleware(['auth', 'role:Sales'])->grou
 Route::prefix('supir')->name('supir.')->middleware(['auth', 'role:Supir'])->group(function () {
     Route::get('/dashboard', [Supir\JadwalController::class, 'index'])->name('dashboard');
     Route::get('/jadwal',    [Supir\JadwalController::class, 'index'])->name('jadwal.index');
+    Route::get('/jadwal/{id}', [Supir\JadwalController::class, 'show'])->name('jadwal.show');
+    Route::patch('/jadwal/{id}/status', [Supir\JadwalController::class, 'updateStatus'])->name('jadwal.updateStatus');
     
     Route::get('/akun',      [Supir\AkunController::class, 'index'])->name('akun.index');
 });

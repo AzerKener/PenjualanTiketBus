@@ -146,6 +146,13 @@
                     <div>
                         <p class="text-lg font-bold text-slate-800">{{ $j->rute->asal }} → {{ $j->rute->tujuan }}</p>
                         <p class="text-sm text-slate-500">{{ \Carbon\Carbon::parse($j->tanggal_berangkat)->isoFormat('D MMM Y') }} • {{ substr($j->waktu_berangkat, 0, 5) }}</p>
+                        @if($j->ratings_count > 0)
+                            <p class="text-xs font-semibold text-slate-600 mt-1 flex items-center gap-1">
+                                <span class="text-yellow-500 text-sm">⭐</span> 
+                                {{ number_format($j->ratings_avg_rating, 1) }} 
+                                <span class="text-slate-400 font-normal">({{ $j->ratings_count }} ulasan)</span>
+                            </p>
+                        @endif
                     </div>
                     <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-semibold">{{ $j->bus->tipe_bus }}</span>
                 </div>

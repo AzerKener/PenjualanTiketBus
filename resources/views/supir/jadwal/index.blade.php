@@ -51,8 +51,8 @@
 <div class="space-y-4" id="jadwal-list">
     @foreach($jadwals as $jadwal)
     @php
-        $isMendatang = in_array($jadwal->status, ['menunggu', 'berangkat']);
-        $isSelesai = $jadwal->status === 'selesai';
+        $isMendatang = in_array($jadwal->status, ['menunggu', 'boarding', 'berangkat']);
+        $isSelesai = in_array($jadwal->status, ['tiba', 'selesai']);
         $filterClass = $isMendatang ? 'filter-mendatang' : 'filter-selesai';
     @endphp
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition-shadow jadwal-card {{ $filterClass }}">
@@ -63,13 +63,17 @@
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
                         <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>Menunggu
                     </span>
+                @elseif($jadwal->status === 'boarding')
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+                        <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>Boarding
+                    </span>
                 @elseif($jadwal->status === 'berangkat')
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
                         <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>Berangkat
                     </span>
                 @else
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>Selesai
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>Tiba / Selesai
                     </span>
                 @endif
             </div>

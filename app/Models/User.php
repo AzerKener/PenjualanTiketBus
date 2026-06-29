@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->role === 'Kenek';
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
 }

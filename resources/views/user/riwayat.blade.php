@@ -50,7 +50,18 @@
                             Dipesan
                             {{ \Carbon\Carbon::parse($p->tanggal_transaksi)->isoFormat('D MMM Y HH:mm') }}
                         </p>
-
+                        
+                        <div class="mt-2">
+                            @if($p->jadwal->status === 'menunggu')
+                                <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide">BUS MENUNGGU</span>
+                            @elseif($p->jadwal->status === 'boarding')
+                                <span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide animate-pulse">PROSES BOARDING</span>
+                            @elseif($p->jadwal->status === 'berangkat')
+                                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide animate-pulse">BUS BERANGKAT</span>
+                            @else
+                                <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide">TELAH TIBA</span>
+                            @endif
+                        </div>
                     </div>
 
                 </div>
@@ -127,11 +138,15 @@
 
                             <a href="{{ route('user.pesan.sukses', $p->id) }}"
                                 class="border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-semibold text-center transition">
-
                                 📄 Detail
-
                             </a>
 
+                            @if ($p->jadwal->status === 'tiba' && $p->status_pembayaran === 'lunas')
+                                <a href="{{ route('user.rating.create', $p->jadwal_id) }}"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold text-center transition flex items-center justify-center gap-2">
+                                    ⭐ Beri Ulasan
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

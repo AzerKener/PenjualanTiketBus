@@ -18,6 +18,8 @@ class HomeController extends Controller
 
         // Jadwal mendatang untuk tampil di beranda
         $jadwalMendatang = Jadwal::with(['bus', 'rute', 'pool'])
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings')
             ->where('tanggal_berangkat', '>=', now()->toDateString())
             ->where('status', 'menunggu')
             ->orderBy('tanggal_berangkat')
@@ -40,6 +42,8 @@ class HomeController extends Controller
         $tujuanList = Rute::orderBy('tujuan')->pluck('tujuan')->unique()->values();
 
         $jadwals = Jadwal::with(['bus', 'rute', 'pool', 'penumpangs'])
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings')
             ->when($request->filled('asal'), function ($q) use ($request) {
                 $q->whereHas('rute', fn ($r) => $r->where('asal', $request->asal));
             })

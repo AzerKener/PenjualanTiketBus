@@ -45,6 +45,17 @@ class TransaksiController extends Controller
             'sales_id' => Auth::id() // Assign to the sales who confirmed it
         ]);
         
+        // Kirim notifikasi E-Tiket via WhatsApp
+        if ($pemesanan->no_hp_pemesan) {
+            $twilio = app(\App\Services\TwilioService::class);
+            $message = "Terima kasih, pembayaran tiket #" . str_pad($pemesanan->id, 6, '0', STR_PAD_LEFT) . " Anda telah BERHASIL diverifikasi.\n\n";
+            $message .= "Berikut adalah tautan E-Tiket Anda:\n";
+            $message .= route('user.etiket', $pemesanan->id) . "\n\n";
+            $message .= "Silakan tunjukkan E-Tiket ini kepada petugas saat keberangkatan.";
+
+            $twilio->sendWhatsAppMessage($pemesanan->no_hp_pemesan, $message);
+        }
+
         return back()->with('success', 'Pembayaran tiket #' . str_pad($pemesanan->id, 6, '0', STR_PAD_LEFT) . ' berhasil dikonfirmasi menjadi Lunas.');
     }
 }

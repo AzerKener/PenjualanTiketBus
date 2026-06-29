@@ -75,6 +75,18 @@ class TransaksiController extends Controller
     public function konfirmasi(Pemesanan $pemesanan)
     {
         $pemesanan->update(['status_pembayaran' => 'lunas']);
+        
+        // Kirim notifikasi E-Tiket via WhatsApp
+        if ($pemesanan->no_hp_pemesan) {
+            $twilio = app(\App\Services\TwilioService::class);
+            $message = "Terima kasih, pembayaran tiket #" . str_pad($pemesanan->id, 6, '0', STR_PAD_LEFT) . " Anda telah BERHASIL diverifikasi oleh Admin.\n\n";
+            $message .= "Berikut adalah tautan E-Tiket Anda:\n";
+            $message .= route('user.etiket', $pemesanan->id) . "\n\n";
+            $message .= "Silakan tunjukkan E-Tiket ini kepada petugas saat keberangkatan.";
+
+            $twilio->sendWhatsAppMessage($pemesanan->no_hp_pemesan, $message);
+        }
+
         return back()->with('success', 'Pembayaran transaksi #' . $pemesanan->id . ' berhasil dikonfirmasi menjadi Lunas.');
     }
 }

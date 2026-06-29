@@ -51,7 +51,7 @@
 
             {{-- Journey --}}
             <div class="px-8 py-6">
-                <div class="flex items-center gap-4 mb-6">
+                <div class="flex items-center gap-4 mb-4">
                     <div class="text-center">
                         <p class="text-3xl font-extrabold text-slate-800">{{ $pemesanan->jadwal->rute->asal }}</p>
                         <p class="text-sm text-slate-500 font-semibold mt-0.5">
@@ -71,6 +71,18 @@
                         <p class="text-3xl font-extrabold text-slate-800">{{ $pemesanan->jadwal->rute->tujuan }}</p>
                         <p class="text-sm text-slate-500 font-semibold mt-0.5">Tujuan</p>
                     </div>
+                </div>
+                
+                <div class="text-center mb-6">
+                    @if($pemesanan->jadwal->status === 'menunggu')
+                        <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold tracking-wide">BUS MENUNGGU</span>
+                    @elseif($pemesanan->jadwal->status === 'boarding')
+                        <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold tracking-wide animate-pulse">PROSES BOARDING - SILAKAN NAIK</span>
+                    @elseif($pemesanan->jadwal->status === 'berangkat')
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold tracking-wide animate-pulse">BUS BERANGKAT</span>
+                    @else
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold tracking-wide">TELAH TIBA DI TUJUAN</span>
+                    @endif
                 </div>
 
                 {{-- Details Grid --}}
@@ -114,6 +126,24 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Lokasi Pool (Google Maps) --}}
+                @if($pemesanan->jadwal->pool->latitude && $pemesanan->jadwal->pool->longitude)
+                <div class="mb-6 print:hidden">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lokasi Pool Keberangkatan</p>
+                    <div class="rounded-xl overflow-hidden border border-slate-200">
+                        <iframe 
+                            width="100%" 
+                            height="150" 
+                            frameborder="0" 
+                            style="border:0" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="https://maps.google.com/maps?q={{ $pemesanan->jadwal->pool->latitude }},{{ $pemesanan->jadwal->pool->longitude }}&hl=id&z=15&output=embed" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+                @endif
 
                 {{-- Passengers (Pergi) --}}
                 @php $penumpangPergi = $pemesanan->penumpangs->where('jadwal_id', $pemesanan->jadwal_id); @endphp

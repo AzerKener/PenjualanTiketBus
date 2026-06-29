@@ -60,4 +60,26 @@ class JadwalController extends Controller
 
         return view('supir.jadwal.show', compact('jadwal', 'pegawai', 'penumpangs'));
     }
+
+    /**
+     * Update status jadwal (menunggu -> boarding -> berangkat -> tiba)
+     */
+    public function updateStatus(Request $request, int $id)
+    {
+        $pegawai = Pegawai::where('nama', Auth::user()->name)->firstOrFail();
+
+        $jadwal = Jadwal::where(function ($q) use ($pegawai) {
+                $q->where('supir1_id', $pegawai->id)
+                  ->orWhere('supir2_id', $pegawai->id);
+            })
+            ->findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:menunggu,boarding,berangkat,tiba,selesai'
+        ]);
+
+        $jadwal->update(['status' => $request->status]);
+
+        return back()->with('success', 'Status jadwal berhasil diperbarui menjadi: ' . ucfirst($request->status));
+    }
 }

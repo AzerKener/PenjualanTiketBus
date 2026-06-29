@@ -25,6 +25,8 @@ class PoolController extends Controller
         $validated = $request->validate([
             'nama_pool' => 'required|string|max:100|unique:pools,nama_pool',
             'lokasi'    => 'required|string|max:255',
+            'latitude'  => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ], [
             'nama_pool.required' => 'Nama pool wajib diisi.',
             'nama_pool.unique'   => 'Nama pool sudah terdaftar.',
@@ -47,6 +49,8 @@ class PoolController extends Controller
         $validated = $request->validate([
             'nama_pool' => 'required|string|max:100|unique:pools,nama_pool,' . $pool->id,
             'lokasi'    => 'required|string|max:255',
+            'latitude'  => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ], [
             'nama_pool.required' => 'Nama pool wajib diisi.',
             'nama_pool.unique'   => 'Nama pool sudah terdaftar.',

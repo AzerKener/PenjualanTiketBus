@@ -16,7 +16,9 @@ class PemesananController extends Controller
     /** Tampilkan halaman pemilihan kursi untuk jadwal tertentu */
     public function show(Jadwal $jadwal)
     {
-        $jadwal->load(['bus', 'rute', 'pool']);
+        $jadwal->load(['rute', 'bus', 'pool'])
+               ->loadAvg('ratings', 'rating')
+               ->loadCount('ratings');
 
         $kursiTerisi = Penumpang::where('jadwal_id', $jadwal->id)
             ->pluck('nomor_kursi')
@@ -159,6 +161,32 @@ class PemesananController extends Controller
             }
 
             DB::commit();
+
+            // Jika metode pembayaran adalah Transfer, buat Snap Token Midtrans
+            if ($request->metode_pembayaran === 'Transfer') {
+                $midtransService = app(\App\Services\MidtransService::class);
+                $snapToken = $midtransService->createSnapToken($pemesanan);
+                
+                if ($snapToken) {
+                    $pemesanan->update(['snap_token' => $snapToken]);
+                }
+            }
+
+            // Kirim notifikasi tagihan (Invoice) via WhatsApp
+            if ($pemesanan->no_hp_pemesan) {
+                $twilio = app(\App\Services\TwilioService::class);
+                $jadwalStr = $jadwalPergi->rute->asal . ' ke ' . $jadwalPergi->rute->tujuan;
+                $message = "Halo {$pemesanan->nama_pemesan},\n\n";
+                $message .= "Pemesanan tiket Anda berhasil dicatat.\n";
+                $message .= "Rute: {$jadwalStr}\n";
+                $message .= "Tanggal: {$jadwalPergi->tanggal_berangkat->format('d M Y')}\n";
+                $message .= "Total Tagihan: Rp " . number_format($totalBayar, 0, ',', '.') . "\n";
+                $message .= "Metode Bayar: {$request->metode_pembayaran}\n\n";
+                $message .= "Silakan lakukan pembayaran agar tiket dapat segera diterbitkan.";
+
+                $twilio->sendWhatsAppMessage($pemesanan->no_hp_pemesan, $message);
+            }
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['general' => 'Terjadi kesalahan sistem. Silakan coba lagi.'])->withInput();

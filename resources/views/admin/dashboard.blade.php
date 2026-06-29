@@ -72,6 +72,23 @@
 
     </div>
 
+    {{-- Charts Section --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-base font-semibold text-slate-800 mb-4">Pendapatan 6 Bulan Terakhir</h2>
+            <div class="relative h-64 w-full">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-base font-semibold text-slate-800 mb-4">Tingkat Okupansi 7 Hari Terakhir</h2>
+            <div class="relative h-64 w-full">
+                <canvas id="occupancyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     {{-- Jadwal Terkini --}}
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -158,4 +175,64 @@
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Data dari Controller
+        const revLabels = {!! json_encode($revenueLabels ?? []) !!}.reverse();
+        const revData = {!! json_encode($revenueData ?? []) !!}.reverse();
+        const occLabels = {!! json_encode($occupancyLabels ?? []) !!}.reverse();
+        const occData = {!! json_encode($occupancyData ?? []) !!}.reverse();
+
+        // Chart Revenue
+        const revCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revCtx, {
+            type: 'line',
+            data: {
+                labels: revLabels,
+                datasets: [{
+                    label: 'Pendapatan (Rp)',
+                    data: revData,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: function(value) { return 'Rp ' + (value/1000000) + 'jt'; } } }
+                }
+            }
+        });
+
+        // Chart Occupancy
+        const occCtx = document.getElementById('occupancyChart').getContext('2d');
+        new Chart(occCtx, {
+            type: 'bar',
+            data: {
+                labels: occLabels,
+                datasets: [{
+                    label: 'Okupansi (%)',
+                    data: occData,
+                    backgroundColor: '#10b981',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { callback: function(value) { return value + '%'; } } }
+                }
+            }
+        });
+    });
+</script>
 @endsection

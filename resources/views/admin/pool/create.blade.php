@@ -68,6 +68,30 @@
                 @enderror
             </div>
 
+            <div class="grid grid-cols-2 gap-4">
+                {{-- Latitude --}}
+                <div>
+                    <label for="latitude" class="block text-sm font-medium text-slate-700 mb-1">Latitude</label>
+                    <input type="text" id="latitude" name="latitude" value="{{ old('latitude') }}"
+                           placeholder="Contoh: -7.8286"
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('latitude') border-red-400 @enderror">
+                    @error('latitude')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                {{-- Longitude --}}
+                <div>
+                    <label for="longitude" class="block text-sm font-medium text-slate-700 mb-1">Longitude</label>
+                    <input type="text" id="longitude" name="longitude" value="{{ old('longitude') }}"
+                           placeholder="Contoh: 110.3958"
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition @error('longitude') border-red-400 @enderror">
+                    @error('longitude')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
             {{-- Actions --}}
             <div class="flex items-center gap-3 pt-2">
                 <button type="submit"

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pool extends Model
 {
-    protected $fillable = ['nama_pool', 'lokasi'];
+    protected $fillable = ['nama_pool', 'lokasi', 'latitude', 'longitude'];
 
     public function jadwals()
     {

@@ -39,9 +39,42 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Chart 1: Revenue 6 Bulan Terakhir
+        $revenueLabels = [];
+        $revenueData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $revenueLabels[] = $month->translatedFormat('M Y');
+            $revenueData[] = Pemesanan::whereYear('tanggal_transaksi', $month->year)
+                                      ->whereMonth('tanggal_transaksi', $month->month)
+                                      ->where('status_pembayaran', 'lunas')
+                                      ->sum('total_bayar');
+        }
+
+        // Chart 2: Okupansi 7 Hari Terakhir
+        $occupancyLabels = [];
+        $occupancyData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $day = Carbon::now()->subDays($i);
+            $occupancyLabels[] = $day->translatedFormat('d M');
+            
+            $jadwalIds = Jadwal::whereDate('tanggal_berangkat', $day->toDateString())->pluck('id');
+            if ($jadwalIds->isEmpty()) {
+                $occupancyData[] = 0;
+            } else {
+                $totalKursi = Bus::whereIn('id', Jadwal::whereIn('id', $jadwalIds)->pluck('bus_id'))->sum('jumlah_kursi');
+                $terisi = \App\Models\Penumpang::whereIn('jadwal_id', $jadwalIds)->count();
+                $occupancyData[] = $totalKursi > 0 ? round(($terisi / $totalKursi) * 100, 1) : 0;
+            }
+        }
+
         return view('admin.dashboard', compact(
             'stats',
-            'jadwalTerkini'
+            'jadwalTerkini',
+            'revenueLabels',
+            'revenueData',
+            'occupancyLabels',
+            'occupancyData'
         ));
     }
 }

@@ -298,13 +298,17 @@
                 </div>
 
                 @if ($pemesanan->status_pembayaran == 'pending')
-                    <div class="mt-5 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-
+                    <div class="mt-5 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700 mb-4">
                         <strong>🟡 Menunggu Pembayaran</strong><br>
-
                         Segera lakukan pembayaran sebelum waktu habis agar pesanan tidak otomatis dibatalkan.
-
                     </div>
+
+                    @if ($pemesanan->snap_token)
+                        <button id="pay-button" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl flex justify-center items-center gap-2 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            Bayar Sekarang (Otomatis Lunas)
+                        </button>
+                    @endif
                 @endif
 
             </div>
@@ -368,7 +372,7 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('alpine:init', () => {
+    document.addEventListener('DOMContentLoaded', () => {
         const statusPembayaran = '{{ $pemesanan->status_pembayaran }}';
         const pemesananId = {{ $pemesanan->id }};
 
@@ -426,6 +430,29 @@
 
         const timer = setInterval(updateCountdown, 1000);
     @endif
+    
+    @if ($pemesanan->snap_token)
+        document.getElementById('pay-button').addEventListener('click', function () {
+            snap.pay('{{ $pemesanan->snap_token }}', {
+                onSuccess: function (result) {
+                    // Cek status otomatis akan mendeteksi lunas, atau kita bisa reload langsung
+                    window.location.reload();
+                },
+                onPending: function (result) {
+                    alert("Menunggu pembayaran Anda!");
+                },
+                onError: function (result) {
+                    alert("Pembayaran gagal!");
+                },
+                onClose: function () {
+                    console.log('User closed the popup without finishing the payment');
+                }
+            });
+        });
+    @endif
 </script>
+@if($pemesanan->snap_token)
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+@endif
 @endpush
 @endsection

@@ -53,6 +53,13 @@
                         {{ \Carbon\Carbon::parse($jadwal->tanggal_berangkat)->isoFormat('dddd, D MMMM Y') }}
                         • {{ substr($jadwal->waktu_berangkat, 0, 5) }} WIB
                     </p>
+                    @if($jadwal->ratings_count > 0)
+                        <div class="mt-2 inline-flex items-center gap-1.5 bg-white/20 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                            <span class="text-yellow-300">⭐</span> 
+                            {{ number_format($jadwal->ratings_avg_rating, 1) }} 
+                            <span class="text-blue-200 font-normal ml-0.5">({{ $jadwal->ratings_count }} ulasan)</span>
+                        </div>
+                    @endif
                     <div class="grid grid-cols-3 gap-2 mt-4">
 
                         {{-- Estimasi Tiba --}}
@@ -174,6 +181,33 @@
             </div>
 
         </div>
+
+        {{-- Lokasi Pool (Google Maps) --}}
+        @if($jadwal->pool->latitude && $jadwal->pool->longitude)
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+                <div class="flex-1 w-full">
+                    <h2 class="text-lg font-bold text-slate-800 mb-1">
+                        🗺️ Lokasi Keberangkatan (Pool)
+                    </h2>
+                    <p class="text-sm text-slate-500 mb-4">
+                        {{ $jadwal->pool->nama_pool }} - {{ $jadwal->pool->lokasi }}
+                    </p>
+                    <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                        <iframe 
+                            width="100%" 
+                            height="250" 
+                            frameborder="0" 
+                            style="border:0" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="https://maps.google.com/maps?q={{ $jadwal->pool->latitude }},{{ $jadwal->pool->longitude }}&hl=id&z=15&output=embed" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         {{-- ═══ STEP 1: Pilih Kursi + Data Penumpang ═══ --}}
         <div x-show="step === 1">
@@ -614,7 +648,7 @@
                                     </div>
                                 </label>
 
-                                {{-- TRANSFER --}}
+                                {{-- TRANSFER (MIDTRANS) --}}
                                 <label class="flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all"
                                     :class="metodePembayaran === 'Transfer' ? 'border-blue-500 bg-blue-50' :
                                         'border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'">
@@ -623,34 +657,26 @@
                                         class="mt-1 text-blue-600 w-4 h-4 flex-shrink-0">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
-                                            <span class="text-2xl">🏦</span>
-                                            <span class="font-semibold text-slate-800">Transfer Bank</span>
+                                            <span class="text-2xl">💳</span>
+                                            <span class="font-semibold text-slate-800">E-Payment & Virtual Account</span>
                                             <span
-                                                class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Perlu
-                                                Konfirmasi</span>
+                                                class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                                Otomatis
+                                            </span>
                                         </div>
-                                        <p class="text-xs text-slate-500 mt-1">Transfer ke rekening BusTicket, lalu
-                                            konfirmasi ke petugas pool.</p>
+                                        <p class="text-xs text-slate-500 mt-1">Gopay, OVO, ShopeePay, BCA VA, Mandiri VA, BNI VA, Kartu Kredit dll. Terverifikasi otomatis.</p>
                                         {{-- Instruksi Transfer --}}
                                         <div x-show="metodePembayaran === 'Transfer'" x-cloak
                                             class="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
-                                            <p class="text-xs font-semibold text-blue-700 mb-2">Rekening Transfer:</p>
-                                            <div class="space-y-1.5 text-xs text-blue-800">
-                                                <div class="flex items-center justify-between">
-                                                    <span>Bank BCA</span>
-                                                    <span class="font-mono font-bold text-sm">1234 5678 90</span>
+                                            <div class="flex items-start gap-3">
+                                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-600">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                 </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span>Bank Mandiri</span>
-                                                    <span class="font-mono font-bold text-sm">1100 0099 8877</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span>a.n.</span>
-                                                    <span class="font-semibold">PT BusTicket Indonesia</span>
-                                                </div>
+                                                <p class="text-xs text-blue-800 pt-1 leading-relaxed">
+                                                    Anda akan diarahkan ke halaman pembayaran aman setelah menekan tombol konfirmasi. Status tiket akan otomatis Lunas setelah pembayaran berhasil, tanpa perlu konfirmasi manual!
+                                                </p>
                                             </div>
-                                            <p class="text-xs text-blue-600 mt-2 font-medium">
-                                                ⚠️ Sertakan nomor HP Anda sebagai berita transfer.
                                             </p>
                                         </div>
                                     </div>

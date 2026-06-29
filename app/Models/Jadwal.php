@@ -64,6 +64,11 @@ class Jadwal extends Model
         return $this->hasMany(Penumpang::class);
     }
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
     /**
      * Kursi yang sudah terisi pada jadwal ini.
      */
