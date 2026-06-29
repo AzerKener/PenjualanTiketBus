@@ -138,4 +138,28 @@
         </a>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        const statusPembayaran = '{{ $pemesanan->status_pembayaran }}';
+        const pemesananId = {{ $pemesanan->id }};
+
+        if (statusPembayaran === 'pending') {
+            let checkInterval = setInterval(() => {
+                fetch(`/pesan/status/${pemesananId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status_pembayaran === 'lunas') {
+                            clearInterval(checkInterval);
+                            alert('Hore! Pembayaran Anda telah dikonfirmasi oleh Admin/Sales. Halaman akan dimuat ulang.');
+                            window.location.reload();
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }, 5000); // Cek setiap 5 detik
+        }
+    });
+</script>
+@endpush
 @endsection

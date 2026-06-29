@@ -15,9 +15,9 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
         {{-- Total Bus --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <a href="{{ route('admin.bus.index') }}" class="block bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group">
             <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <div class="w-10 h-10 bg-blue-50 group-hover:bg-blue-100 rounded-xl flex items-center justify-center transition-colors">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                     </svg>
@@ -25,13 +25,13 @@
                 <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Aktif</span>
             </div>
             <p class="text-2xl font-bold text-slate-800">{{ $stats['total_bus'] ?? 0 }}</p>
-            <p class="text-xs text-slate-500 mt-1">Total Bus</p>
-        </div>
+            <p class="text-xs text-slate-500 mt-1 group-hover:text-blue-600 transition-colors">Lihat Semua Bus →</p>
+        </a>
 
         {{-- Jadwal Hari Ini --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <a href="{{ route('admin.jadwal.index') }}" class="block bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-violet-300 transition-all cursor-pointer group">
             <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center">
+                <div class="w-10 h-10 bg-violet-50 group-hover:bg-violet-100 rounded-xl flex items-center justify-center transition-colors">
                     <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
@@ -39,13 +39,13 @@
                 <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Hari Ini</span>
             </div>
             <p class="text-2xl font-bold text-slate-800">{{ $stats['jadwal_hari_ini'] ?? 0 }}</p>
-            <p class="text-xs text-slate-500 mt-1">Total Jadwal</p>
-        </div>
+            <p class="text-xs text-slate-500 mt-1 group-hover:text-violet-600 transition-colors">Kelola Jadwal →</p>
+        </a>
 
         {{-- Transaksi Hari Ini --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <a href="{{ route('admin.transaksi.index') }}" class="block bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-amber-300 transition-all cursor-pointer group">
             <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+                <div class="w-10 h-10 bg-amber-50 group-hover:bg-amber-100 rounded-xl flex items-center justify-center transition-colors">
                     <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
@@ -53,13 +53,13 @@
                 <span class="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Hari Ini</span>
             </div>
             <p class="text-2xl font-bold text-slate-800">{{ $stats['transaksi_hari_ini'] ?? 0 }}</p>
-            <p class="text-xs text-slate-500 mt-1">Total Transaksi</p>
-        </div>
+            <p class="text-xs text-slate-500 mt-1 group-hover:text-amber-600 transition-colors">Cek Transaksi →</p>
+        </a>
 
         {{-- Pendapatan Hari Ini --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <a href="{{ route('admin.laporan.index') }}" class="block bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group">
             <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                <div class="w-10 h-10 bg-emerald-50 group-hover:bg-emerald-100 rounded-xl flex items-center justify-center transition-colors">
                     <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -67,8 +67,8 @@
                 <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Hari Ini</span>
             </div>
             <p class="text-2xl font-bold text-slate-800">Rp {{ number_format($stats['pendapatan_hari_ini'] ?? 0, 0, ',', '.') }}</p>
-            <p class="text-xs text-slate-500 mt-1">Pendapatan</p>
-        </div>
+            <p class="text-xs text-slate-500 mt-1 group-hover:text-emerald-600 transition-colors">Lihat Laporan →</p>
+        </a>
 
     </div>
 

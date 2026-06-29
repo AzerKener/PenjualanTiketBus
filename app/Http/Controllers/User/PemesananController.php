@@ -60,7 +60,7 @@ class PemesananController extends Controller
             'kursi_pergi.*'          => ['required', 'string'],
             'nama_penumpang_pergi'   => ['required', 'array', 'min:1'],
             'nama_penumpang_pergi.*' => ['required', 'string', 'max:100'],
-            'metode_pembayaran'      => ['required', 'in:Cash,Transfer,E-Wallet'],
+            'metode_pembayaran'      => ['required', 'in:Transfer,E-Wallet'],
         ], [
             'jadwal_id.required'           => 'Jadwal tidak valid.',
             'kursi_pergi.required'         => 'Pilih minimal 1 kursi.',
@@ -97,7 +97,7 @@ class PemesananController extends Controller
         $hargaPergi      = $jadwalPergi->harga_tiket * $jumlahKursi;
         $hargaPulang     = $jadwalPulang ? ($jadwalPulang->harga_tiket * $jumlahKursi) : 0;
         $totalBayar      = $hargaPergi + $hargaPulang;
-        $statusPembayaran= $request->metode_pembayaran === 'Cash' ? 'lunas' : 'pending';
+        $statusPembayaran= 'pending';
 
         DB::beginTransaction();
         try {
@@ -157,6 +157,18 @@ class PemesananController extends Controller
         $pemesanan->load(['jadwal.rute', 'jadwal.bus', 'jadwal.pool', 'jadwalPulang.rute', 'jadwalPulang.bus', 'penumpangs']);
 
         return view('user.sukses', compact('pemesanan'));
+    }
+
+    /** API: Cek Status Pembayaran (Polling) */
+    public function cekStatus(Pemesanan $pemesanan)
+    {
+        if ($pemesanan->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return response()->json([
+            'status_pembayaran' => $pemesanan->status_pembayaran
+        ]);
     }
 
     /** Riwayat pemesanan user */

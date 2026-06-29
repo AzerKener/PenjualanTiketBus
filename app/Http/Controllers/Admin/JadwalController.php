@@ -52,7 +52,6 @@ class JadwalController extends Controller
             'supir1_id'         => 'required|exists:pegawais,id',
             'supir2_id'         => 'nullable|exists:pegawais,id|different:supir1_id',
             'kenek_id'          => 'nullable|exists:pegawais,id',
-            'status'            => 'required|in:menunggu,berangkat,selesai',
         ], [
             'bus_id.required'            => 'Bus wajib dipilih.',
             'rute_id.required'           => 'Rute wajib dipilih.',
@@ -64,8 +63,10 @@ class JadwalController extends Controller
             'harga_tiket.min'            => 'Harga tiket minimal Rp 1.000.',
             'supir1_id.required'         => 'Supir 1 wajib dipilih.',
             'supir2_id.different'        => 'Supir 2 tidak boleh sama dengan Supir 1.',
-            'status.required'            => 'Status jadwal wajib dipilih.',
         ]);
+
+        // Status selalu 'menunggu' saat jadwal baru dibuat
+        $validated['status'] = 'menunggu';
 
         $tanggal = $validated['tanggal_berangkat'];
 
@@ -134,7 +135,6 @@ class JadwalController extends Controller
             'supir1_id'         => 'required|exists:pegawais,id',
             'supir2_id'         => 'nullable|exists:pegawais,id|different:supir1_id',
             'kenek_id'          => 'nullable|exists:pegawais,id',
-            'status'            => 'required|in:menunggu,berangkat,selesai',
         ], [
             'bus_id.required'            => 'Bus wajib dipilih.',
             'rute_id.required'           => 'Rute wajib dipilih.',
@@ -145,8 +145,9 @@ class JadwalController extends Controller
             'harga_tiket.min'            => 'Harga tiket minimal Rp 1.000.',
             'supir1_id.required'         => 'Supir 1 wajib dipilih.',
             'supir2_id.different'        => 'Supir 2 tidak boleh sama dengan Supir 1.',
-            'status.required'            => 'Status jadwal wajib dipilih.',
         ]);
+
+        // Status tidak diubah melalui form edit — gunakan updateStatus()
 
         $tanggal   = $validated['tanggal_berangkat'];
         $excludeId = $jadwal->id;

@@ -64,7 +64,18 @@ class PemesananController extends Controller
             ->findOrFail($id);
 
         $kursiTerisi = $jadwal->kursiTerisi();
-        $semuaKursi  = range(1, $jadwal->bus->jumlah_kursi);
+
+        // Generate kursi format alfanumerik (1A, 1B, 1C, 1D, ...) — sama dengan User
+        $jumlahKursi = $jadwal->bus->jumlah_kursi;
+        $cols = ['A', 'B', 'C', 'D'];
+        $semuaKursi = [];
+        for ($row = 1; $row <= ceil($jumlahKursi / 4); $row++) {
+            foreach ($cols as $col) {
+                if (count($semuaKursi) < $jumlahKursi) {
+                    $semuaKursi[] = $row . $col;
+                }
+            }
+        }
 
         $jadwalPulangList = Jadwal::with(['bus', 'rute'])
             ->whereHas('rute', fn($q) => $q->where('asal', $jadwal->rute->tujuan)
@@ -86,7 +97,7 @@ class PemesananController extends Controller
             'nama_pemesan'       => 'required|string|max:100',
             'no_hp_pemesan'      => 'required|string|max:20',
             'kursi'              => 'required|array|min:1',
-            'kursi.*'            => 'required|integer|min:1',
+            'kursi.*'            => 'required|string|max:10',
             'nama_penumpang'     => 'required|array|min:1',
             'nama_penumpang.*'   => 'required|string|max:100',
             'is_round_trip'      => 'nullable|boolean',

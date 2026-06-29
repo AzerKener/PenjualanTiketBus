@@ -44,6 +44,7 @@ Route::prefix('tiket')->name('user.')->group(function () {
         Route::get('/pesan/{jadwal}',            [User\PemesananController::class, 'show'])->name('pesan.show');
         Route::post('/pesan',                    [User\PemesananController::class, 'store'])->name('pesan.store');
         Route::get('/pesan/sukses/{pemesanan}',  [User\PemesananController::class, 'sukses'])->name('pesan.sukses');
+        Route::get('/pesan/status/{pemesanan}',  [User\PemesananController::class, 'cekStatus'])->name('pesan.status');
         Route::get('/riwayat',                   [User\PemesananController::class, 'riwayat'])->name('riwayat');
         Route::get('/profil',                    [User\AkunController::class, 'index'])->name('akun.index');
         Route::get('/tiket/{pemesanan}',         [User\PemesananController::class, 'etiket'])->name('etiket');

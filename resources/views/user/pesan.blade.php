@@ -54,7 +54,27 @@
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                 <h2 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-base">
                     Pilih Kursi
+                    <span x-show="isRefreshing" class="ml-auto flex items-center gap-1 text-xs text-blue-500 font-normal">
+                        <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                        </svg>
+                        Memperbarui...
+                    </span>
+                    <span x-show="!isRefreshing && lastRefresh" class="ml-auto text-xs text-slate-400 font-normal" x-text="'Diperbarui: ' + lastRefresh"></span>
                 </h2>
+
+                {{-- Notifikasi kursi konflik --}}
+                <div x-data="{ konflikMsg: '' }"
+                     @kursi-konflik.window="konflikMsg = 'Kursi ' + $event.detail.kursi.join(', ') + ' baru saja dipesan orang lain dan telah dibatalkan dari pilihan Anda.'; setTimeout(() => konflikMsg = '', 8000)"
+                     x-show="konflikMsg !== ''"
+                     x-transition
+                     class="mb-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-700 flex items-start gap-2">
+                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    </svg>
+                    <span x-text="konflikMsg"></span>
+                </div>
 
                 {{-- Legend --}}
                 <div class="flex items-center gap-4 mb-4 text-xs text-slate-500">
@@ -364,21 +384,6 @@
                         </h2>
 
                         <div class="space-y-3">
-                            {{-- CASH --}}
-                            <label class="flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all"
-                                   :class="metodePembayaran === 'Cash' ? 'border-green-500 bg-green-50' : 'border-slate-200 hover:border-green-300 hover:bg-green-50/50'">
-                                <input type="radio" name="metode_pembayaran" value="Cash"
-                                       x-model="metodePembayaran" required class="mt-1 text-green-600 w-4 h-4 flex-shrink-0">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-2xl">💵</span>
-                                        <span class="font-semibold text-slate-800">Tunai (Cash)</span>
-                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Langsung Lunas</span>
-                                    </div>
-                                    <p class="text-xs text-slate-500 mt-1">Bayar langsung di pool keberangkatan sebelum bus berangkat.</p>
-                                </div>
-                            </label>
-
                             {{-- TRANSFER --}}
                             <label class="flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all"
                                    :class="metodePembayaran === 'Transfer' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'">
@@ -530,7 +535,10 @@ function pemesanan(semuaKursi, kursiTerisi, jadwalId, hargaPergi) {
     return {
         step: 1,
         semuaKursi,
+        jadwalId,
         terisi: kursiTerisi,
+        isRefreshing: false,
+        lastRefresh: null,
         dipilih: [],
         namaPenumpangPergi: [],
         isRoundTrip: false,
@@ -629,6 +637,51 @@ function pemesanan(semuaKursi, kursiTerisi, jadwalId, hargaPergi) {
             const pulang = (this.isRoundTrip && this.dipilihPulang.length > 0)
                 ? this.dipilihPulang.length * this.hargaPulang : 0;
             return pergi + pulang;
+        },
+
+        // ── Polling kursi terisi real-time ──────────────────────────────
+        async refreshKursiTerisi() {
+            if (this.isRefreshing) return;
+            this.isRefreshing = true;
+            try {
+                const resp = await fetch(`/tiket/kursi-terisi/${this.jadwalId}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                if (!resp.ok) return;
+                const data = await resp.json();
+                const terbaruTerisi = data.kursi_terisi || [];
+
+                // Jika ada kursi yang sudah kita pilih tapi sekarang terisi orang lain → batalkan pilihan
+                const konflik = this.dipilih.filter(k => terbaruTerisi.includes(k));
+                if (konflik.length > 0) {
+                    konflik.forEach(k => {
+                        const idx = this.dipilih.indexOf(k);
+                        if (idx !== -1) {
+                            this.dipilih.splice(idx, 1);
+                            this.namaPenumpangPergi.splice(idx, 1);
+                        }
+                    });
+                    // Tampilkan notifikasi
+                    this.$dispatch('kursi-konflik', { kursi: konflik });
+                }
+
+                this.terisi = terbaruTerisi;
+                this.lastRefresh = new Date().toLocaleTimeString('id-ID');
+            } catch (e) {
+                // Gagal fetch – abaikan, coba lagi di interval berikutnya
+            } finally {
+                this.isRefreshing = false;
+            }
+        },
+
+        init() {
+            // Mulai polling setiap 10 detik selama user masih di step pilih kursi
+            const polling = setInterval(() => {
+                if (this.step === 1) this.refreshKursiTerisi();
+            }, 10000);
+
+            // Bersihkan interval saat navigasi pergi
+            window.addEventListener('beforeunload', () => clearInterval(polling));
         }
     }
 }
