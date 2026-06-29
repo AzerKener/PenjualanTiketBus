@@ -326,25 +326,17 @@
         </div>
     </div>
 
-    {{-- Actions --}}
-    <div class="flex flex-col sm:flex-row gap-3">
-        <a href="{{ route('user.etiket', $pemesanan->id) }}"
-            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-3.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
-            </svg>
-            Lihat E-Ticket
-        </a>
-        <a href="{{ route('user.riwayat') }}"
-            class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-center font-semibold py-3.5 rounded-xl text-sm transition-colors">
-            Riwayat Pemesanan
-        </a>
-        <a href="{{ route('user.home') }}"
-            class="flex-1 border border-slate-200 hover:bg-slate-50 text-slate-600 text-center font-medium py-3.5 rounded-xl text-sm transition-colors">
-            Pesan Tiket Baru
-        </a>
+    {{-- Toast Notification --}}
+    <div id="payment-toast"
+        style="display:none; position:fixed; bottom:24px; right:24px; z-index:9999;
+               background:#16a34a; color:#fff; padding:16px 24px; border-radius:14px;
+               box-shadow:0 8px 32px rgba(0,0,0,0.18); font-size:15px; font-weight:600;
+               max-width:340px; display:none; align-items:center; gap:12px;">
+        <svg style="width:22px;height:22px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span id="payment-toast-msg">Pembayaran dikonfirmasi! Halaman akan dimuat ulang…</span>
     </div>
-</div>
 
 @push('scripts')
 <script>
@@ -354,54 +346,58 @@
 
         if (statusPembayaran === 'pending') {
             let checkInterval = setInterval(() => {
-                fetch(`/pesan/status/${pemesananId}`)
+                fetch(`/tiket/pesan/status/${pemesananId}`)
                     .then(res => res.json())
                     .then(data => {
                         if (data.status_pembayaran === 'lunas') {
                             clearInterval(checkInterval);
-                            alert('Hore! Pembayaran Anda telah dikonfirmasi oleh Admin/Sales. Halaman akan dimuat ulang.');
-                            window.location.reload();
+                            // Tampilkan toast notification
+                            const toast = document.getElementById('payment-toast');
+                            toast.style.display = 'flex';
+                            // Auto-dismiss dan reload setelah 4 detik
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 4000);
                         }
                     })
                     .catch(err => console.error(err));
             }, 5000); // Cek setiap 5 detik
         }
     });
-</script>
-@endpush
+
     @if ($pemesanan->status_pembayaran == 'pending')
-        <script>
-            const deadline = {{ $pemesanan->created_at->addHours(2)->timestamp * 1000 }};
+        const deadline = {{ $pemesanan->created_at->addHours(2)->timestamp * 1000 }};
 
-            function updateCountdown() {
+        function updateCountdown() {
 
-                const now = Date.now();
+            const now = Date.now();
 
-                let distance = deadline - now;
+            let distance = deadline - now;
 
-                if (distance <= 0) {
+            if (distance <= 0) {
 
-                    document.getElementById("countdown").innerHTML = "00:00:00";
+                document.getElementById("countdown").innerHTML = "00:00:00";
 
-                    clearInterval(timer);
+                clearInterval(timer);
 
-                    return;
-                }
-
-                const hours = Math.floor(distance / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById("countdown").innerHTML =
-                    String(hours).padStart(2, '0') + ":" +
-                    String(minutes).padStart(2, '0') + ":" +
-                    String(seconds).padStart(2, '0');
-
+                return;
             }
 
-            updateCountdown();
+            const hours = Math.floor(distance / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            const timer = setInterval(updateCountdown, 1000);
-        </script>
+            document.getElementById("countdown").innerHTML =
+                String(hours).padStart(2, '0') + ":" +
+                String(minutes).padStart(2, '0') + ":" +
+                String(seconds).padStart(2, '0');
+
+        }
+
+        updateCountdown();
+
+        const timer = setInterval(updateCountdown, 1000);
     @endif
+</script>
+@endpush
 @endsection

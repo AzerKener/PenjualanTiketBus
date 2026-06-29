@@ -462,7 +462,7 @@
                                 <span>Biaya Bagasi</span>
 
                                 <span class="font-bold text-blue-600"
-                                    x-text="'Rp ' + (bagasi*10000).toLocaleString('id-ID')">
+                                    x-text="bagasi > 20 ? 'Rp ' + ((bagasi - 20) * 10000).toLocaleString('id-ID') : 'Gratis'">
                                 </span>
                             </div>
 
@@ -494,6 +494,7 @@
                 <input type="hidden" name="jadwal_id" value="{{ $jadwal->id }}">
                 <input type="hidden" name="is_round_trip" :value="isRoundTrip ? 1 : 0">
                 <input type="hidden" name="jadwal_pulang_id" :value="jadwalPulangId">
+                <input type="hidden" name="bagasi" :value="bagasi">
 
                 {{-- Hidden: kursi + nama pergi --}}
                 <template x-for="(kursi, i) in dipilih" :key="'h-pergi-' + i">
@@ -738,11 +739,11 @@
                             <div class="border-t border-slate-700 pt-2 mt-2">
                                 <div class="flex justify-between text-slate-300">
                                     <span>Tambahan Bagasi</span>
-                                    <span x-text="bagasi + ' Kg'"></span>
+                                    <span x-text="bagasi + ' Kg' + (bagasi <= 20 ? ' (Gratis)' : '')"></span>
                                 </div>
-                                <div class="flex justify-between text-slate-300 font-medium">
+                                <div class="flex justify-between text-slate-300 font-medium" x-show="bagasi > 20" x-cloak>
                                     <span></span>
-                                    <span x-text="'Rp ' + (bagasi * 10000).toLocaleString('id-ID')">
+                                    <span x-text="'Rp ' + ((bagasi - 20) * 10000).toLocaleString('id-ID')">
                                     </span>
                                 </div>
                             </div>
@@ -899,7 +900,8 @@
                             this.dipilihPulang.length * this.hargaPulang :
                             0;
 
-                        const biayaBagasi = this.bagasi * 10000;
+                        // Gratis 20 Kg pertama, sisanya Rp 10.000/Kg
+                        const biayaBagasi = this.bagasi > 20 ? (this.bagasi - 20) * 10000 : 0;
 
                         return pergi + pulang + biayaBagasi;
                     },

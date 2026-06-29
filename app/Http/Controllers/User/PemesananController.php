@@ -63,13 +63,15 @@ class PemesananController extends Controller
             'kursi_pergi.*'          => ['required', 'string'],
             'nama_penumpang_pergi'   => ['required', 'array', 'min:1'],
             'nama_penumpang_pergi.*' => ['required', 'string', 'max:100'],
-            'metode_pembayaran'      => ['required', 'in:Transfer,E-Wallet'],
+            'metode_pembayaran'      => ['required', 'in:Cash,Transfer,E-Wallet'],
+            'bagasi'                 => ['nullable', 'integer', 'min:0', 'max:100'],
         ], [
             'jadwal_id.required'           => 'Jadwal tidak valid.',
             'kursi_pergi.required'         => 'Pilih minimal 1 kursi.',
             'nama_penumpang_pergi.required'=> 'Nama penumpang wajib diisi.',
             'metode_pembayaran.required'   => 'Pilih metode pembayaran.',
             'metode_pembayaran.in'         => 'Metode pembayaran tidak valid.',
+            'bagasi.max'                   => 'Bagasi maksimal 100 Kg.',
         ]);
 
         $jadwalPergi = Jadwal::findOrFail($request->jadwal_id);
@@ -96,11 +98,24 @@ class PemesananController extends Controller
             }
         }
 
-        $jumlahKursi     = count($request->kursi_pergi);
-        $hargaPergi      = $jadwalPergi->harga_tiket * $jumlahKursi;
-        $hargaPulang     = $jadwalPulang ? ($jadwalPulang->harga_tiket * $jumlahKursi) : 0;
-        $totalBayar      = $hargaPergi + $hargaPulang;
-        $statusPembayaran= 'pending';
+        // Validasi jumlah kursi pulang harus sama dengan kursi pergi
+        if ($jadwalPulang && $request->filled('kursi_pulang')) {
+            if (count($request->kursi_pulang) !== count($request->kursi_pergi)) {
+                return back()->withErrors(['kursi_pulang' => 'Jumlah kursi pulang harus sama dengan jumlah kursi pergi (' . count($request->kursi_pergi) . ' kursi).'])->withInput();
+            }
+        }
+
+        $jumlahKursi  = count($request->kursi_pergi);
+        $hargaPergi   = $jadwalPergi->harga_tiket * $jumlahKursi;
+        $hargaPulang  = $jadwalPulang ? ($jadwalPulang->harga_tiket * $jumlahKursi) : 0;
+
+        // Hitung biaya bagasi tambahan (gratis 20 Kg pertama, Rp 10.000/kg sisanya)
+        $bagasiKg     = (int) ($request->input('bagasi', 0));
+        $biayaBagasi  = $bagasiKg > 20 ? ($bagasiKg - 20) * 10000 : 0;
+
+        $totalBayar       = $hargaPergi + $hargaPulang + $biayaBagasi;
+        // Cash → langsung lunas; Transfer/E-Wallet → pending sampai dikonfirmasi admin
+        $statusPembayaran = $request->metode_pembayaran === 'Cash' ? 'lunas' : 'pending';
 
         DB::beginTransaction();
         try {
@@ -110,6 +125,8 @@ class PemesananController extends Controller
                 'tipe_pemesanan'     => 'Online',
                 'metode_pembayaran'  => $request->metode_pembayaran,
                 'total_bayar'        => $totalBayar,
+                'bagasi'             => $bagasiKg,
+                'biaya_bagasi'       => $biayaBagasi,
                 'is_round_trip'      => $isRoundTrip,
                 'nama_pemesan'       => Auth::user()->name,
                 'no_hp_pemesan'      => Auth::user()->no_hp,

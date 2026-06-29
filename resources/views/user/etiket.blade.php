@@ -169,6 +169,12 @@
                 </div>
             </div>
 
+            {{-- QR Code --}}
+            <div class="px-8 py-6 text-center">
+                <div id="qrcode" class="inline-block"></div>
+                <p class="text-xs text-slate-400 mt-2">Scan untuk verifikasi tiket</p>
+            </div>
+
             {{-- Footer --}}
             <div class="border-t border-slate-200 px-8 py-4 bg-slate-50 text-center">
                 <p class="text-xs text-slate-400">Harap tiba di pool keberangkatan minimal 30 menit sebelum jadwal.
@@ -195,7 +201,27 @@
                     box-shadow: none;
                     border: 1px solid #ccc;
                 }
+
+                #qrcode {
+                    display: block !important;
+                }
             }
         </style>
+    @endpush
+
+    @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new QRCode(document.getElementById('qrcode'), {
+                text: '{{ route('user.etiket', $pemesanan->id) }}',
+                width: 120,
+                height: 120,
+                colorDark: '#1e293b',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        });
+    </script>
     @endpush
 @endsection

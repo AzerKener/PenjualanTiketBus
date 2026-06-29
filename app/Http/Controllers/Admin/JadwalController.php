@@ -48,25 +48,36 @@ class JadwalController extends Controller
             'pool_id'           => 'required|exists:pools,id',
             'tanggal_berangkat' => 'required|date|after_or_equal:today',
             'waktu_berangkat'   => 'required|date_format:H:i',
-            'estimasi_tiba'     => 'required|date_format:H:i|after:waktu_berangkat',
+            'estimasi_tiba'     => 'required|date_format:H:i',
             'harga_tiket'       => 'required|numeric|min:1000',
             'supir1_id'         => 'required|exists:pegawais,id',
             'supir2_id'         => 'nullable|exists:pegawais,id|different:supir1_id',
             'kenek_id'          => 'nullable|exists:pegawais,id',
         ], [
-            'bus_id.required'            => 'Bus wajib dipilih.',
-            'rute_id.required'           => 'Rute wajib dipilih.',
-            'pool_id.required'           => 'Pool wajib dipilih.',
-            'tanggal_berangkat.required' => 'Tanggal berangkat wajib diisi.',
+            'bus_id.required'                  => 'Bus wajib dipilih.',
+            'rute_id.required'                 => 'Rute wajib dipilih.',
+            'pool_id.required'                 => 'Pool wajib dipilih.',
+            'tanggal_berangkat.required'       => 'Tanggal berangkat wajib diisi.',
             'tanggal_berangkat.after_or_equal' => 'Tanggal berangkat tidak boleh di masa lampau.',
-            'waktu_berangkat.required'   => 'Waktu berangkat wajib diisi.',
-            'estimasi_tiba.required'    => 'Estimasi tiba wajib diisi.',
-            'estimasi_tiba.after'       => 'Estimasi tiba harus lebih besar dari waktu berangkat.',
-            'harga_tiket.required'       => 'Harga tiket wajib diisi.',
-            'harga_tiket.min'            => 'Harga tiket minimal Rp 1.000.',
-            'supir1_id.required'         => 'Supir 1 wajib dipilih.',
-            'supir2_id.different'        => 'Supir 2 tidak boleh sama dengan Supir 1.',
+            'waktu_berangkat.required'         => 'Waktu berangkat wajib diisi.',
+            'estimasi_tiba.required'           => 'Estimasi tiba wajib diisi.',
+            'harga_tiket.required'             => 'Harga tiket wajib diisi.',
+            'harga_tiket.min'                  => 'Harga tiket minimal Rp 1.000.',
+            'supir1_id.required'               => 'Supir 1 wajib dipilih.',
+            'supir2_id.different'              => 'Supir 2 tidak boleh sama dengan Supir 1.',
         ]);
+
+        // Validasi manual estimasi tiba — support perjalanan melewati tengah malam
+        $berangkat    = \Carbon\Carbon::createFromFormat('H:i', $validated['waktu_berangkat']);
+        $estimasiTiba = \Carbon\Carbon::createFromFormat('H:i', $validated['estimasi_tiba']);
+        // Jika estimasi_tiba <= waktu_berangkat, asumsikan tiba keesokan harinya
+        if ($estimasiTiba->lte($berangkat)) {
+            $estimasiTiba->addDay();
+        }
+        if (!$estimasiTiba->greaterThan($berangkat)) {
+            return back()->withInput()
+                ->withErrors(['estimasi_tiba' => 'Estimasi tiba harus setelah waktu berangkat.']);
+        }
 
         // Status selalu 'menunggu' saat jadwal baru dibuat
         $validated['status'] = 'menunggu';
@@ -134,7 +145,7 @@ class JadwalController extends Controller
             'pool_id'           => 'required|exists:pools,id',
             'tanggal_berangkat' => 'required|date',
             'waktu_berangkat'   => 'required|date_format:H:i',
-            'estimasi_tiba'     => 'required|date_format:H:i|after:waktu_berangkat',
+            'estimasi_tiba'     => 'required|date_format:H:i',
             'harga_tiket'       => 'required|numeric|min:1000',
             'supir1_id'         => 'required|exists:pegawais,id',
             'supir2_id'         => 'nullable|exists:pegawais,id|different:supir1_id',
@@ -145,13 +156,23 @@ class JadwalController extends Controller
             'pool_id.required'           => 'Pool wajib dipilih.',
             'tanggal_berangkat.required' => 'Tanggal berangkat wajib diisi.',
             'waktu_berangkat.required'   => 'Waktu berangkat wajib diisi.',
-            'estimasi_tiba.required'    => 'Estimasi tiba wajib diisi.',
-            'estimasi_tiba.after'       => 'Estimasi tiba harus lebih besar dari waktu berangkat.',
+            'estimasi_tiba.required'     => 'Estimasi tiba wajib diisi.',
             'harga_tiket.required'       => 'Harga tiket wajib diisi.',
             'harga_tiket.min'            => 'Harga tiket minimal Rp 1.000.',
             'supir1_id.required'         => 'Supir 1 wajib dipilih.',
             'supir2_id.different'        => 'Supir 2 tidak boleh sama dengan Supir 1.',
         ]);
+
+        // Validasi manual estimasi tiba — support perjalanan melewati tengah malam
+        $berangkat    = \Carbon\Carbon::createFromFormat('H:i', $validated['waktu_berangkat']);
+        $estimasiTiba = \Carbon\Carbon::createFromFormat('H:i', $validated['estimasi_tiba']);
+        if ($estimasiTiba->lte($berangkat)) {
+            $estimasiTiba->addDay();
+        }
+        if (!$estimasiTiba->greaterThan($berangkat)) {
+            return back()->withInput()
+                ->withErrors(['estimasi_tiba' => 'Estimasi tiba harus setelah waktu berangkat.']);
+        }
 
         // Status tidak diubah melalui form edit — gunakan updateStatus()
 
