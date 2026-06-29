@@ -32,47 +32,6 @@
         @php
             $berangkat = \Carbon\Carbon::parse($jadwal->waktu_berangkat);
 
-            {{-- Kiri: Denah Kursi --}}
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <h2 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-base">
-                    Pilih Kursi
-                    <span x-show="isRefreshing" class="ml-auto flex items-center gap-1 text-xs text-blue-500 font-normal">
-                        <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                        </svg>
-                        Memperbarui...
-                    </span>
-                    <span x-show="!isRefreshing && lastRefresh" class="ml-auto text-xs text-slate-400 font-normal" x-text="'Diperbarui: ' + lastRefresh"></span>
-                </h2>
-
-                {{-- Notifikasi kursi konflik --}}
-                <div x-data="{ konflikMsg: '' }"
-                     @kursi-konflik.window="konflikMsg = 'Kursi ' + $event.detail.kursi.join(', ') + ' baru saja dipesan orang lain dan telah dibatalkan dari pilihan Anda.'; setTimeout(() => konflikMsg = '', 8000)"
-                     x-show="konflikMsg !== ''"
-                     x-transition
-                     class="mb-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-700 flex items-start gap-2">
-                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                    </svg>
-                    <span x-text="konflikMsg"></span>
-                </div>
-
-                {{-- Legend --}}
-                <div class="flex items-center gap-4 mb-4 text-xs text-slate-500">
-                    <div class="flex items-center gap-1.5">
-                        <div class="w-6 h-6 rounded-lg border-2 border-slate-300 bg-white"></div>
-                        <span>Tersedia</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <div class="w-6 h-6 rounded-lg bg-blue-600"></div>
-                        <span>Dipilih</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <div class="w-6 h-6 rounded-lg bg-slate-200"></div>
-                        <span>Terisi</span>
-                    </div>
-                </div>
             if (!empty($jadwal->estimasi_tiba)) {
                 $tiba = \Carbon\Carbon::parse($jadwal->estimasi_tiba);
 
@@ -224,7 +183,28 @@
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                     <h2 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-base">
                         Pilih Kursi
+                        <span x-show="isRefreshing" x-cloak class="ml-auto flex items-center gap-1 text-xs text-blue-500 font-normal">
+                            <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                            </svg>
+                            Memperbarui...
+                        </span>
+                        <span x-show="!isRefreshing && lastRefresh" x-cloak class="ml-auto text-xs text-slate-400 font-normal" x-text="'Diperbarui: ' + lastRefresh"></span>
                     </h2>
+
+                    {{-- Notifikasi kursi konflik --}}
+                    <div x-data="{ konflikMsg: '' }"
+                         @kursi-konflik.window="konflikMsg = 'Kursi ' + $event.detail.kursi.join(', ') + ' baru saja dipesan orang lain dan telah dibatalkan dari pilihan Anda.'; setTimeout(() => konflikMsg = '', 8000)"
+                         x-show="konflikMsg !== ''"
+                         x-transition
+                         x-cloak
+                         class="mb-3 p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-700 flex items-start gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <span x-text="konflikMsg"></span>
+                    </div>
 
                     {{-- Legend --}}
                     <div class="flex items-center gap-4 mb-4 text-xs text-slate-500">
@@ -254,38 +234,6 @@
                         </div>
                     </div>
 
-<<<<<<< HEAD
-                        <div class="space-y-3">
-                            {{-- TRANSFER --}}
-                            <label class="flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all"
-                                   :class="metodePembayaran === 'Transfer' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'">
-                                <input type="radio" name="metode_pembayaran" value="Transfer"
-                                       x-model="metodePembayaran" required class="mt-1 text-blue-600 w-4 h-4 flex-shrink-0">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-2xl">🏦</span>
-                                        <span class="font-semibold text-slate-800">Transfer Bank</span>
-                                        <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Perlu Konfirmasi</span>
-                                    </div>
-                                    <p class="text-xs text-slate-500 mt-1">Transfer ke rekening BusTicket, lalu konfirmasi ke petugas pool.</p>
-                                    {{-- Instruksi Transfer --}}
-                                    <div x-show="metodePembayaran === 'Transfer'" x-cloak
-                                         class="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
-                                        <p class="text-xs font-semibold text-blue-700 mb-2">Rekening Transfer:</p>
-                                        <div class="space-y-1.5 text-xs text-blue-800">
-                                            <div class="flex items-center justify-between">
-                                                <span>Bank BCA</span>
-                                                <span class="font-mono font-bold text-sm">1234 5678 90</span>
-                                            </div>
-                                            <div class="flex items-center justify-between">
-                                                <span>Bank Mandiri</span>
-                                                <span class="font-mono font-bold text-sm">1100 0099 8877</span>
-                                            </div>
-                                            <div class="flex items-center justify-between">
-                                                <span>a.n.</span>
-                                                <span class="font-semibold">PT BusTicket Indonesia</span>
-                                            </div>
-=======
                     {{-- Seat Grid (2+2 layout) --}}
                     <div class="overflow-y-auto max-h-80">
                         <div class="grid gap-2" :style="'grid-template-columns: 1fr 1fr 24px 1fr 1fr'">
@@ -383,7 +331,6 @@
                                                 :disabled="terisiPulang.includes(kursi)" @click="toggleKursiPulang(kursi)"
                                                 x-text="kursi">
                                             </button>
->>>>>>> af1af08bd08d97c03e17c1b82e23ab797d271407
                                         </div>
                                     </template>
                                 </div>
@@ -841,8 +788,11 @@
                 return {
                     step: 1,
                     semuaKursi,
+                    jadwalId,
                     terisi: kursiTerisi,
                     bagasi: 0,
+                    isRefreshing: false,
+                    lastRefresh: null,
                     dipilih: [],
                     namaPenumpangPergi: [],
                     isRoundTrip: false,
@@ -855,29 +805,6 @@
                     namaPenumpangPulang: [],
                     metodePembayaran: '',
 
-<<<<<<< HEAD
-@push('scripts')
-<script>
-function pemesanan(semuaKursi, kursiTerisi, jadwalId, hargaPergi) {
-    return {
-        step: 1,
-        semuaKursi,
-        jadwalId,
-        terisi: kursiTerisi,
-        isRefreshing: false,
-        lastRefresh: null,
-        dipilih: [],
-        namaPenumpangPergi: [],
-        isRoundTrip: false,
-        jadwalPulangId: '',
-        hargaPergi,
-        hargaPulang: 0,
-        semuaKursiPulang: [],
-        terisiPulang: [],
-        dipilihPulang: [],
-        namaPenumpangPulang: [],
-        metodePembayaran: '',
-=======
                     toggleKursi(kursi) {
                         if (this.terisi.includes(kursi)) return;
                         const idx = this.dipilih.indexOf(kursi);
@@ -889,7 +816,6 @@ function pemesanan(semuaKursi, kursiTerisi, jadwalId, hargaPergi) {
                             this.namaPenumpangPergi.push('');
                         }
                     },
->>>>>>> af1af08bd08d97c03e17c1b82e23ab797d271407
 
                     toggleKursiPulang(kursi) {
                         if (this.terisiPulang.includes(kursi)) return;
@@ -976,102 +902,54 @@ function pemesanan(semuaKursi, kursiTerisi, jadwalId, hargaPergi) {
                         const biayaBagasi = this.bagasi * 10000;
 
                         return pergi + pulang + biayaBagasi;
+                    },
+
+                    // ── Polling kursi terisi real-time ──────────────────────────────
+                    async refreshKursiTerisi() {
+                        if (this.isRefreshing) return;
+                        this.isRefreshing = true;
+                        try {
+                            const resp = await fetch(`/tiket/kursi-terisi/${this.jadwalId}`, {
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            });
+                            if (!resp.ok) return;
+                            const data = await resp.json();
+                            const terbaruTerisi = data.kursi_terisi || [];
+
+                            // Jika ada kursi yang sudah kita pilih tapi sekarang terisi orang lain → batalkan pilihan
+                            const konflik = this.dipilih.filter(k => terbaruTerisi.includes(k));
+                            if (konflik.length > 0) {
+                                konflik.forEach(k => {
+                                    const idx = this.dipilih.indexOf(k);
+                                    if (idx !== -1) {
+                                        this.dipilih.splice(idx, 1);
+                                        this.namaPenumpangPergi.splice(idx, 1);
+                                    }
+                                });
+                                // Tampilkan notifikasi
+                                this.$dispatch('kursi-konflik', { kursi: konflik });
+                            }
+
+                            this.terisi = terbaruTerisi;
+                            this.lastRefresh = new Date().toLocaleTimeString('id-ID');
+                        } catch (e) {
+                            // Gagal fetch – abaikan, coba lagi di interval berikutnya
+                        } finally {
+                            this.isRefreshing = false;
+                        }
+                    },
+
+                    init() {
+                        // Mulai polling setiap 10 detik selama user masih di step pilih kursi
+                        const polling = setInterval(() => {
+                            if (this.step === 1) this.refreshKursiTerisi();
+                        }, 10000);
+
+                        // Bersihkan interval saat navigasi pergi
+                        window.addEventListener('beforeunload', () => clearInterval(polling));
                     }
                 }
             }
-<<<<<<< HEAD
-            this.semuaKursiPulang = seats;
-
-            // Ambil harga dari select option
-            const sel = document.querySelector('[x-model="jadwalPulangId"]');
-            if (sel) {
-                const opt = sel.options[sel.selectedIndex];
-                if (opt && opt.dataset.harga) {
-                    this.hargaPulang = parseInt(opt.dataset.harga);
-                }
-            }
-        },
-
-        bisaLanjut() {
-            if (this.dipilih.length === 0) return false;
-            // Cek semua nama terisi
-            for (let i = 0; i < this.dipilih.length; i++) {
-                if (!this.namaPenumpangPergi[i] || this.namaPenumpangPergi[i].trim() === '') return false;
-            }
-            // Jika round trip, cek kursi pulang dipilih
-            if (this.isRoundTrip) {
-                if (!this.jadwalPulangId) return false;
-                if (this.dipilihPulang.length === 0) return false;
-                for (let i = 0; i < this.dipilihPulang.length; i++) {
-                    if (!this.namaPenumpangPulang[i] || this.namaPenumpangPulang[i].trim() === '') return false;
-                }
-            }
-            return true;
-        },
-
-        lanjutKePembayaran() {
-            if (!this.bisaLanjut()) return;
-            this.step = 2;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-
-        totalHarga() {
-            const pergi = this.dipilih.length * this.hargaPergi;
-            const pulang = (this.isRoundTrip && this.dipilihPulang.length > 0)
-                ? this.dipilihPulang.length * this.hargaPulang : 0;
-            return pergi + pulang;
-        },
-
-        // ── Polling kursi terisi real-time ──────────────────────────────
-        async refreshKursiTerisi() {
-            if (this.isRefreshing) return;
-            this.isRefreshing = true;
-            try {
-                const resp = await fetch(`/tiket/kursi-terisi/${this.jadwalId}`, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                if (!resp.ok) return;
-                const data = await resp.json();
-                const terbaruTerisi = data.kursi_terisi || [];
-
-                // Jika ada kursi yang sudah kita pilih tapi sekarang terisi orang lain → batalkan pilihan
-                const konflik = this.dipilih.filter(k => terbaruTerisi.includes(k));
-                if (konflik.length > 0) {
-                    konflik.forEach(k => {
-                        const idx = this.dipilih.indexOf(k);
-                        if (idx !== -1) {
-                            this.dipilih.splice(idx, 1);
-                            this.namaPenumpangPergi.splice(idx, 1);
-                        }
-                    });
-                    // Tampilkan notifikasi
-                    this.$dispatch('kursi-konflik', { kursi: konflik });
-                }
-
-                this.terisi = terbaruTerisi;
-                this.lastRefresh = new Date().toLocaleTimeString('id-ID');
-            } catch (e) {
-                // Gagal fetch – abaikan, coba lagi di interval berikutnya
-            } finally {
-                this.isRefreshing = false;
-            }
-        },
-
-        init() {
-            // Mulai polling setiap 10 detik selama user masih di step pilih kursi
-            const polling = setInterval(() => {
-                if (this.step === 1) this.refreshKursiTerisi();
-            }, 10000);
-
-            // Bersihkan interval saat navigasi pergi
-            window.addEventListener('beforeunload', () => clearInterval(polling));
-        }
-    }
-}
-</script>
-@endpush
-=======
         </script>
     @endpush
->>>>>>> af1af08bd08d97c03e17c1b82e23ab797d271407
 @endsection
