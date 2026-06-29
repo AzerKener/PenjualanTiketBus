@@ -12,15 +12,20 @@
     </a>
 </div>
 
-<!-- Filter -->
-<form method="GET" class="bg-white rounded-2xl border border-slate-200 p-4 mb-6 flex gap-4 items-end">
+<!-- Filter & Cari -->
+<form method="GET" class="bg-white rounded-2xl border border-slate-200 p-4 mb-6 flex flex-wrap gap-4 items-end">
+    <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cari Tiket / No. HP</label>
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Contoh: 15 atau 0812..."
+               class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 min-w-[200px]">
+    </div>
     <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Filter Tanggal</label>
         <input type="date" name="tanggal" value="{{ request('tanggal') }}"
                class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
     </div>
-    <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl transition-colors">Filter</button>
-    @if(request('tanggal'))
+    <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl transition-colors">Cari</button>
+    @if(request('tanggal') || request('search'))
     <a href="{{ route('sales.transaksi.index') }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold rounded-xl transition-colors">Reset</a>
     @endif
 </form>
@@ -66,9 +71,27 @@
                     <td class="p-4 text-sm text-center font-bold text-slate-700">{{ $trx->penumpangs->count() }}</td>
                     <td class="p-4 text-sm font-bold text-slate-800">Rp {{ number_format($trx->total_bayar, 0, ',', '.') }}</td>
                     <td class="p-4">
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
-                        </span>
+                        @if($trx->status_pembayaran === 'lunas')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
+                            </span>
+                        @else
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                                    <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Pending
+                                </span>
+                                <form method="POST" action="{{ route('sales.transaksi.konfirmasi', $trx->id) }}" onsubmit="return confirm('Konfirmasi bahwa uang cash sudah diterima dari {{ $trx->nama_pemesan }} sejumlah Rp {{ number_format($trx->total_bayar, 0, ',', '.') }}?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm">
+                                        Konfirmasi Bayar
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+                        @if($trx->tipe_pemesanan === 'Online')
+                            <span class="block mt-1 text-[10px] uppercase font-bold text-blue-500">Pemesanan Online</span>
+                        @endif
                     </td>
                 </tr>
                 @empty

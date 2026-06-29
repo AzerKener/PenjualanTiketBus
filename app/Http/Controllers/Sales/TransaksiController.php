@@ -12,15 +12,39 @@ class TransaksiController extends Controller
     public function index(Request $request)
     {
         $query = Pemesanan::with(['jadwal.rute', 'penumpangs'])
-            ->where('sales_id', Auth::id())
+            ->where(function ($q) {
+                $q->where('sales_id', Auth::id())
+                  ->orWhere('tipe_pemesanan', 'Online');
+            })
             ->orderByDesc('tanggal_transaksi');
 
         if ($request->filled('tanggal')) {
             $query->whereDate('tanggal_transaksi', $request->tanggal);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            // Jika search berupa angka (mungkin ID pesanan), hilangkan prefix 0
+            $searchId = ltrim($search, '0');
+            $query->where(function ($q) use ($search, $searchId) {
+                $q->where('id', $searchId)
+                  ->orWhere('nama_pemesan', 'like', "%{$search}%")
+                  ->orWhere('no_hp_pemesan', 'like', "%{$search}%");
+            });
+        }
+
         $transaksis = $query->paginate(15)->withQueryString();
 
         return view('sales.transaksi.index', compact('transaksis'));
+    }
+
+    public function konfirmasi(Pemesanan $pemesanan)
+    {
+        $pemesanan->update([
+            'status_pembayaran' => 'lunas',
+            'sales_id' => Auth::id() // Assign to the sales who confirmed it
+        ]);
+        
+        return back()->with('success', 'Pembayaran tiket #' . str_pad($pemesanan->id, 6, '0', STR_PAD_LEFT) . ' berhasil dikonfirmasi menjadi Lunas.');
     }
 }

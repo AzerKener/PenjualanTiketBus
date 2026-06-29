@@ -114,8 +114,9 @@ class PemesananController extends Controller
         $biayaBagasi  = $bagasiKg > 20 ? ($bagasiKg - 20) * 10000 : 0;
 
         $totalBayar       = $hargaPergi + $hargaPulang + $biayaBagasi;
-        // Cash → langsung lunas; Transfer/E-Wallet → pending sampai dikonfirmasi admin
-        $statusPembayaran = $request->metode_pembayaran === 'Cash' ? 'lunas' : 'pending';
+        // Semua pemesanan online (termasuk Cash) masuk ke status pending.
+        // Jika Cash, user harus bayar di loket/pool ke Sales untuk dikonfirmasi.
+        $statusPembayaran = 'pending';
 
         DB::beginTransaction();
         try {

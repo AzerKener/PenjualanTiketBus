@@ -87,8 +87,12 @@
                         <p class="text-xs text-slate-400">{{ $pemesanan->jadwal->bus->tipe_bus }}</p>
                     </div>
                     <div class="bg-slate-50 rounded-xl p-3">
-                        <p class="text-xs text-slate-400 font-medium uppercase">Pool</p>
+                        <p class="text-xs text-slate-400 font-medium uppercase">Pool Keberangkatan</p>
                         <p class="font-bold text-slate-700 mt-0.5 text-sm">{{ $pemesanan->jadwal->pool->nama_pool }}</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-3">
+                        <p class="text-xs text-slate-400 font-medium uppercase">Pool Kedatangan</p>
+                        <p class="font-bold text-slate-700 mt-0.5 text-sm">{{ $pemesanan->jadwal->poolTujuan ? $pemesanan->jadwal->poolTujuan->nama_pool : '-' }}</p>
                     </div>
                     <div class="bg-slate-50 rounded-xl p-3">
                         <p class="text-xs text-slate-400 font-medium uppercase">Nama Pemesan</p>

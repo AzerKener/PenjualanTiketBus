@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Jadwal extends Model
 {
     protected $fillable = [
-        'bus_id', 'rute_id', 'pool_id',
+        'bus_id', 'rute_id', 'pool_id', 'pool_tujuan_id',
         'tanggal_berangkat', 'waktu_berangkat', 'estimasi_tiba',
         'harga_tiket', 'supir1_id', 'supir2_id', 'kenek_id', 'status',
     ];
@@ -27,9 +27,16 @@ class Jadwal extends Model
         return $this->belongsTo(Rute::class);
     }
 
+    // Pool Asal (Titik Keberangkatan)
     public function pool()
     {
-        return $this->belongsTo(Pool::class);
+        return $this->belongsTo(Pool::class, 'pool_id');
+    }
+
+    // Pool Tujuan (Titik Kedatangan)
+    public function poolTujuan()
+    {
+        return $this->belongsTo(Pool::class, 'pool_tujuan_id');
     }
 
     public function supir1()

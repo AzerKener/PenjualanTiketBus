@@ -67,6 +67,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:Admin'])->grou
 
     Route::get('/penumpang', [Admin\PenumpangController::class, 'index'])->name('penumpang.index');
     Route::get('/laporan',   [Admin\LaporanController::class,   'index'])->name('laporan.index');
+    Route::get('/laporan/export-csv', [Admin\LaporanController::class, 'exportCsv'])->name('laporan.exportCsv');
     Route::get('/transaksi', [Admin\TransaksiController::class,  'index'])->name('transaksi.index');
     Route::patch('/transaksi/{pemesanan}/konfirmasi', [Admin\TransaksiController::class, 'konfirmasi'])->name('transaksi.konfirmasi');
     Route::get('/akun',      [Admin\AkunController::class,       'index'])->name('akun.index');
@@ -83,6 +84,7 @@ Route::prefix('sales')->name('sales.')->middleware(['auth', 'role:Sales'])->grou
     Route::get('/pemesanan/kursi-terisi/{jadwalId}', [Sales\PemesananController::class, 'getKursiTerisi'])->name('pemesanan.kursiTerisi');
     Route::post('/pemesanan/jadwal-pulang',     [Sales\PemesananController::class,  'getJadwalPulang'])->name('pemesanan.jadwalPulang');
     Route::get('/transaksi',                    [Sales\TransaksiController::class,  'index'])->name('transaksi.index');
+    Route::patch('/transaksi/{pemesanan}/konfirmasi', [Sales\TransaksiController::class, 'konfirmasi'])->name('transaksi.konfirmasi');
     Route::get('/akun',                         [Sales\AkunController::class,       'index'])->name('akun.index');
 });
 

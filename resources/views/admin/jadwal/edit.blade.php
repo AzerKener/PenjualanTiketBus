@@ -92,15 +92,15 @@
                     @enderror
                 </div>
 
-                {{-- Pool --}}
+                {{-- Pool Asal --}}
                 <div>
                     <label for="pool_id" class="block text-sm font-medium text-slate-700 mb-1">
-                        Pool <span class="text-red-500">*</span>
+                        Pool Asal <span class="text-red-500">*</span>
                     </label>
                     <select id="pool_id"
                             name="pool_id"
                             class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('pool_id') border-red-400 @enderror">
-                        <option value="" disabled>-- Pilih Pool --</option>
+                        <option value="" disabled>-- Pilih Pool Asal --</option>
                         @foreach($pools as $pool)
                         <option value="{{ $pool->id }}" {{ old('pool_id', $jadwal->pool_id) == $pool->id ? 'selected' : '' }}>
                             {{ $pool->nama_pool }}
@@ -108,6 +108,26 @@
                         @endforeach
                     </select>
                     @error('pool_id')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Pool Tujuan --}}
+                <div>
+                    <label for="pool_tujuan_id" class="block text-sm font-medium text-slate-700 mb-1">
+                        Pool Tujuan <span class="text-red-500">*</span>
+                    </label>
+                    <select id="pool_tujuan_id"
+                            name="pool_tujuan_id"
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition @error('pool_tujuan_id') border-red-400 @enderror">
+                        <option value="" disabled>-- Pilih Pool Tujuan --</option>
+                        @foreach($pools as $pool)
+                        <option value="{{ $pool->id }}" {{ old('pool_tujuan_id', $jadwal->pool_tujuan_id) == $pool->id ? 'selected' : '' }}>
+                            {{ $pool->nama_pool }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('pool_tujuan_id')
                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror
                 </div>

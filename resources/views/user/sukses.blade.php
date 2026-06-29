@@ -128,7 +128,7 @@
                         <p class="text-sm text-slate-500">Tujuan</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-5 text-sm">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 text-sm">
                     <div>
                         <p class="text-slate-400 text-xs font-medium uppercase">Tanggal</p>
                         <p class="font-semibold text-slate-700">
@@ -140,33 +140,61 @@
                         <p class="text-xs text-slate-400">{{ $pemesanan->jadwal->bus->tipe_bus }}</p>
                     </div>
                     <div>
-                        <p class="text-slate-400 text-xs font-medium uppercase">Pool</p>
+                        <p class="text-slate-400 text-xs font-medium uppercase">Pool Asal</p>
                         <p class="font-semibold text-slate-700">{{ $pemesanan->jadwal->pool->nama_pool }}</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 text-xs font-medium uppercase">Pool Tujuan</p>
+                        <p class="font-semibold text-slate-700">{{ $pemesanan->jadwal->poolTujuan ? $pemesanan->jadwal->poolTujuan->nama_pool : '-' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- Pool --}}
-            <div class="border-b border-slate-100 p-6">
+            <div class="border-b border-slate-100 p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                    📍 Pool Keberangkatan
-                </h3>
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        📍 Pool Keberangkatan
+                    </h3>
 
-                <div class="bg-slate-50 rounded-xl p-4">
+                    <div class="bg-slate-50 rounded-xl p-4 h-full">
 
-                    <p class="font-bold">
-                        {{ $pemesanan->jadwal->pool->nama_pool }}
-                    </p>
+                        <p class="font-bold">
+                            {{ $pemesanan->jadwal->pool->nama_pool }}
+                        </p>
 
-                    <p class="text-sm text-slate-600 mt-1">
-                        {{ $pemesanan->jadwal->pool->alamat }}
-                    </p>
+                        <p class="text-sm text-slate-600 mt-1">
+                            {{ $pemesanan->jadwal->pool->alamat }}
+                        </p>
 
-                    <p class="text-sm text-blue-600 mt-2">
-                        ☎ {{ $pemesanan->jadwal->pool->telepon }}
-                    </p>
+                        <p class="text-sm text-blue-600 mt-2">
+                            ☎ {{ $pemesanan->jadwal->pool->telepon }}
+                        </p>
 
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        🏁 Pool Kedatangan
+                    </h3>
+
+                    <div class="bg-slate-50 rounded-xl p-4 h-full">
+
+                        <p class="font-bold">
+                            {{ $pemesanan->jadwal->poolTujuan ? $pemesanan->jadwal->poolTujuan->nama_pool : '-' }}
+                        </p>
+
+                        <p class="text-sm text-slate-600 mt-1">
+                            {{ $pemesanan->jadwal->poolTujuan ? $pemesanan->jadwal->poolTujuan->alamat : 'Alamat tidak tersedia' }}
+                        </p>
+
+                        <p class="text-sm text-blue-600 mt-2">
+                            ☎ {{ $pemesanan->jadwal->poolTujuan ? $pemesanan->jadwal->poolTujuan->telepon : '-' }}
+                        </p>
+
+                    </div>
                 </div>
 
             </div>

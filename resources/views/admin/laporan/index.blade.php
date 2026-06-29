@@ -29,18 +29,51 @@
             <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
                 class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
             <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors">
+                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm">
                 Tampilkan
             </button>
             <a href="{{ route('admin.laporan.index') }}"
-                class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+                class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm">
                 Reset
             </a>
+            <div class="h-9 w-px bg-slate-200 mx-1"></div>
+            <a href="{{ route('admin.laporan.exportCsv', request()->all()) }}"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Export CSV
+            </a>
+            <button type="button" onclick="window.print()"
+                class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Cetak / PDF
+            </button>
         </div>
     </form>
 </div>
+
+<style type="text/css" media="print">
+    /* Sembunyikan elemen yang tidak perlu diprint */
+    nav, aside, form, button, a {
+        display: none !important;
+    }
+    /* Sembunyikan header layout */
+    #header-container {
+        display: none !important;
+    }
+    /* Expand content area to full width when printing */
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    /* Pastikan warna terlihat di PDF */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+</style>
 
 @if($jadwals->isEmpty())
 <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
