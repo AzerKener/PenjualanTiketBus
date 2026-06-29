@@ -44,7 +44,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
         <form action="{{ route('admin.jadwal.store') }}" method="POST">
             @csrf
-
+                <input type="hidden" name="status" value="menunggu">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
                 {{-- Bus --}}
@@ -134,6 +134,22 @@
                            class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition @error('waktu_berangkat') border-red-400 @enderror">
                     @error('waktu_berangkat')
                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Estimasi Tiba --}}
+                <div>
+                    <label for="estimasi_tiba" class="block text-sm font-medium text-slate-700 mb-1">
+                        Estimasi Tiba <span class="text-red-500">*</span>
+                    </label>
+                    <input type="time" 
+                           id="estimasi_tiba" 
+                           name="estimasi_tiba" 
+                           value="{{ old('estimasi_tiba') }}" 
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition
+                        @error('estimasi_tiba') border-red-400 @enderror">
+                    @error('estimasi_tiba')
+                        <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror
                 </div>
 

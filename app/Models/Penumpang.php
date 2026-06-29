@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Penumpang extends Model
 {
-    protected $fillable = ['pemesanan_id', 'jadwal_id', 'nomor_kursi', 'nama_penumpang'];
+    protected $fillable = ['pemesanan_id', 'jadwal_id', 'nomor_kursi', 'nama_penumpang', 'bagasi_kg',
+    'biaya_bagasi'];
 
     public function pemesanan()
     {

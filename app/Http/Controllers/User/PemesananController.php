@@ -24,6 +24,9 @@ class PemesananController extends Controller
 
         $jumlahKursi = $jadwal->bus->jumlah_kursi;
 
+        $jumlahTerisi = count($kursiTerisi);
+        $kursiTersedia = $jumlahKursi - $jumlahTerisi;
+
         // Generate daftar kursi (format: 1A, 1B, 1C, 1D, ...)
         $semuaKursi = [];
         $cols = ['A', 'B', 'C', 'D'];
@@ -46,7 +49,7 @@ class PemesananController extends Controller
             ->orderBy('waktu_berangkat')
             ->get();
 
-        return view('user.pesan', compact('jadwal', 'kursiTerisi', 'semuaKursi', 'jadwalPulangList'));
+        return view('user.pesan', compact('jadwal', 'kursiTerisi', 'semuaKursi', 'jadwalPulangList', 'jumlahKursi', 'jumlahTerisi', 'kursiTersedia'));
     }
 
     /** Simpan pemesanan online */

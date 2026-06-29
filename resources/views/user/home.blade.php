@@ -34,15 +34,20 @@
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                             </svg>
-                            <input list="asal-list" name="asal" value="{{ request('asal') }}"
-                                placeholder="cth. Jakarta"
-                                class="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-3 py-3 text-white placeholder-blue-300 text-sm focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all">
-                            <datalist id="asal-list">
-                                @foreach($asalList as $a)<option value="{{ $a }}" class="text-slate-800">@endforeach
-                            </datalist>
+                            <select id="asal" name="asal" class="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-3 py-3 text-white text-sm focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all">
+                                <option value="" class="text-slate-800">Pilih Kota Asal</option>
+                                @foreach($asalList as $a)
+                                    <option value="{{ $a }}" 
+                                        class="text-slate-800"
+                                        {{ request('asal') == $a ? 'selected' : '' }}>
+                                        {{ $a }}
+                                    </option>
+                                @endforeach
+
+                            </select>
                         </div>
                     </div>
-
+                    
                     {{-- Tujuan --}}
                     <div>
                         <label class="block text-xs font-semibold text-blue-200 uppercase tracking-wider mb-2">Kota Tujuan</label>
@@ -50,12 +55,16 @@
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                             </svg>
-                            <input list="tujuan-list" name="tujuan" value="{{ request('tujuan') }}"
-                                placeholder="cth. Surabaya"
-                                class="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-3 py-3 text-white placeholder-blue-300 text-sm focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all">
-                            <datalist id="tujuan-list">
-                                @foreach($tujuanList as $t)<option value="{{ $t }}" class="text-slate-800">@endforeach
-                            </datalist>
+                            <select id="tujuan" name="tujuan" class="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-3 py-3 text-white text-sm focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all">
+                                <option value="" class="text-slate-800">Pilih Kota Tujuan</option>
+                                @foreach($tujuanList as $t)
+                                <option value="{{ $t }}"
+                                    class="text-slate-800"
+                                    {{ request('tujuan') == $t ? 'selected' : '' }}>
+                                    {{ $t }}
+                                </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -168,6 +177,45 @@
             @endforeach
         </div>
     </div>
+    <script>
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+const asal=document.getElementById("asal");
+
+const tujuan=document.getElementById("tujuan");
+
+const swap=document.getElementById("swapCity");
+
+swap.addEventListener("click",()=>{
+
+let temp=asal.value;
+
+asal.value=tujuan.value;
+
+tujuan.value=temp;
+
+});
+
+document.getElementById("searchForm").addEventListener("submit",(e)=>{
+
+if(
+asal.value!="" &&
+tujuan.value!="" &&
+asal.value==tujuan.value
+){
+
+e.preventDefault();
+
+alert("Kota asal dan tujuan tidak boleh sama.");
+
+}
+
+});
+
+});
+
+</script>
 </section>
 @endif
 

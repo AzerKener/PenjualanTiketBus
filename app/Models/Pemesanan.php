@@ -9,7 +9,8 @@ class Pemesanan extends Model
     protected $fillable = [
         'jadwal_id', 'jadwal_pulang_id', 'tipe_pemesanan', 'metode_pembayaran',
         'total_bayar', 'is_round_trip', 'nama_pemesan', 'no_hp_pemesan',
-        'tanggal_transaksi', 'user_id', 'sales_id', 'status_pembayaran',
+        'tanggal_transaksi', 'user_id', 'sales_id', 'status_pembayaran', 
+        'bagasi', 'biaya_bagasi',
     ];
 
     protected $casts = [
