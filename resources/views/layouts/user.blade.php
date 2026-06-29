@@ -37,6 +37,7 @@
 
             <div class="flex items-center gap-3">
                 @auth
+                    @if(auth()->user()->role === 'User')
                     {{-- Notification Bell --}}
                     <a href="{{ route('notifikasi.index') }}" class="relative p-2 text-slate-500 hover:text-blue-600 transition-colors mr-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
