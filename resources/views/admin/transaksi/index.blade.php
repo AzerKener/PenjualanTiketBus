@@ -142,15 +142,28 @@
                     </td>
                     <td class="px-4 py-3 whitespace-nowrap text-center">
                         @if($p->status_pembayaran === 'pending')
-                        <form action="{{ route('admin.transaksi.konfirmasi', $p->id) }}" method="POST" class="inline" onsubmit="return confirm('Konfirmasi pembayaran telah diterima dan ubah status menjadi Lunas?')">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
-                                Konfirmasi
-                            </button>
-                        </form>
+                        <div class="flex items-center gap-2">
+                            <form action="{{ route('admin.transaksi.konfirmasi', $p->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="text-xs bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors border border-emerald-200 hover:border-transparent flex items-center gap-1.5" onclick="return confirm('Konfirmasi pembayaran telah diterima?')">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Konfirmasi
+                                </button>
+                            </form>
+                            <form action="{{ route('admin.transaksi.tolak', $p->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="text-xs bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors border border-red-200 hover:border-transparent flex items-center gap-1.5" onclick="return confirm('Tolak transaksi ini? Transaksi akan dibatalkan dan kursi dilepas.')">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    Tolak
+                                </button>
+                            </form>
+                        </div>
                         @else
-                        <span class="text-xs text-slate-400">—</span>
+                        <a href="{{ route('admin.transaksi.etiket', $p->id) }}" target="_blank" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-colors inline-block">
+                            E-Ticket
+                        </a>
                         @endif
                     </td>
                 </tr>

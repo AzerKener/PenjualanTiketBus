@@ -39,14 +39,22 @@
                 @auth
                     @if(auth()->user()->role === 'User')
                     {{-- Notification Bell --}}
-                    <a href="{{ route('notifikasi.index') }}" class="relative p-2 text-slate-500 hover:text-blue-600 transition-colors mr-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
-                        @if(auth()->user()->unreadNotifications->count() > 0)
-                            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                        @endif
-                    </a>
+                    <div x-data="{ unread: {{ auth()->user()->unreadNotifications->count() }}, animating: false }" 
+                         x-init="setInterval(() => {
+                            fetch('{{ route('notifikasi.unread') }}')
+                                .then(res => res.json())
+                                .then(data => {
+                                    if(data.count > unread) { animating = true; setTimeout(() => animating = false, 1000); }
+                                    unread = data.count;
+                                })
+                         }, 5000)">
+                        <a href="{{ route('notifikasi.index') }}" class="relative p-2 text-slate-500 hover:text-blue-600 transition-colors mr-2 block" :class="{'animate-bounce text-blue-600': animating}">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <span x-show="unread > 0" x-cloak class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                        </a>
+                    </div>
 
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition-colors">

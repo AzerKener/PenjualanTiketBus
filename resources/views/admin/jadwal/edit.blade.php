@@ -269,6 +269,14 @@
         const allPoolAsalOptions = Array.from(poolAsalSelect.options).filter(opt => opt.value !== "");
         const allPoolTujuanOptions = Array.from(poolTujuanSelect.options).filter(opt => opt.value !== "");
 
+        const supir1Select = document.getElementById('supir1_id');
+        const supir2Select = document.getElementById('supir2_id');
+        const kenekSelect = document.getElementById('kenek_id');
+
+        const allSupir1Options = Array.from(supir1Select.options).filter(opt => opt.value !== "");
+        const allSupir2Options = Array.from(supir2Select.options).filter(opt => opt.value !== "");
+        const allKenekOptions = Array.from(kenekSelect.options).filter(opt => opt.value !== "");
+
         function updatePools() {
             const selectedRute = ruteSelect.options[ruteSelect.selectedIndex];
             
@@ -308,14 +316,109 @@
                     }
                 }
             });
+
+            updatePetugas();
+        }
+
+        function updatePetugas() {
+            const selectedPoolId = poolAsalSelect.value;
+            if (!selectedPoolId) return;
+
+            // Supir 1
+            allSupir1Options.forEach(opt => {
+                if (opt.getAttribute('data-pool') === selectedPoolId) {
+                    opt.style.display = '';
+                    opt.hidden = false;
+                    opt.disabled = false;
+                } else {
+                    opt.style.display = 'none';
+                    opt.hidden = true;
+                    opt.disabled = true;
+                    if (supir1Select.value === opt.value) supir1Select.value = "";
+                }
+            });
+
+            // Supir 2
+            allSupir2Options.forEach(opt => {
+                if (opt.getAttribute('data-pool') === selectedPoolId) {
+                    opt.style.display = '';
+                    opt.hidden = false;
+                    opt.disabled = false;
+                } else {
+                    opt.style.display = 'none';
+                    opt.hidden = true;
+                    opt.disabled = true;
+                    if (supir2Select.value === opt.value) supir2Select.value = "";
+                }
+            });
+
+            // Kenek
+            allKenekOptions.forEach(opt => {
+                if (opt.getAttribute('data-pool') === selectedPoolId) {
+                    opt.style.display = '';
+                    opt.hidden = false;
+                    opt.disabled = false;
+                } else {
+                    opt.style.display = 'none';
+                    opt.hidden = true;
+                    opt.disabled = true;
+                    if (kenekSelect.value === opt.value) kenekSelect.value = "";
+                }
+            });
+
+            preventDuplicateSupir();
+        }
+
+        function preventDuplicateSupir() {
+            const selectedPoolId = poolAsalSelect.value;
+            if (!selectedPoolId) return;
+
+            const s1 = supir1Select.value;
+            const s2 = supir2Select.value;
+
+            // Supir 2 options: hide the one selected in Supir 1
+            allSupir2Options.forEach(opt => {
+                if (opt.getAttribute('data-pool') === selectedPoolId) {
+                    if (opt.value !== "" && opt.value === s1) {
+                        opt.style.display = 'none';
+                        opt.hidden = true;
+                        opt.disabled = true;
+                    } else {
+                        opt.style.display = '';
+                        opt.hidden = false;
+                        opt.disabled = false;
+                    }
+                }
+            });
+
+            // Supir 1 options: hide the one selected in Supir 2
+            allSupir1Options.forEach(opt => {
+                if (opt.getAttribute('data-pool') === selectedPoolId) {
+                    if (opt.value !== "" && opt.value === s2) {
+                        opt.style.display = 'none';
+                        opt.hidden = true;
+                        opt.disabled = true;
+                    } else {
+                        opt.style.display = '';
+                        opt.hidden = false;
+                        opt.disabled = false;
+                    }
+                }
+            });
         }
 
         // Jalankan saat rute berubah
         ruteSelect.addEventListener('change', updatePools);
+        poolAsalSelect.addEventListener('change', updatePetugas);
+        supir1Select.addEventListener('change', preventDuplicateSupir);
+        supir2Select.addEventListener('change', preventDuplicateSupir);
 
         // Jalankan saat pertama kali dimuat
         if (ruteSelect.value) {
             updatePools();
+        }
+        if (poolAsalSelect.value) {
+            updatePetugas();
         }
     });
 </script>

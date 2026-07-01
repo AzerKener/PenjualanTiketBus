@@ -11,25 +11,33 @@ class DashboardController extends Controller
     public function index()
     {
         $salesId = Auth::id();
+        $poolId = Auth::user()->pool_id;
         $hariIni = now()->toDateString();
 
-        $penjualanHariIni = Pemesanan::where('sales_id', $salesId)
+        $baseQuery = Pemesanan::whereHas('jadwal', function($q) use ($poolId) {
+            $q->where('pool_id', $poolId);
+        })->where(function ($q) use ($salesId) {
+            $q->where('sales_id', $salesId)
+              ->orWhere('tipe_pemesanan', 'Online');
+        });
+
+        $penjualanHariIni = (clone $baseQuery)
             ->whereDate('tanggal_transaksi', $hariIni)
+            ->where('status_pembayaran', 'lunas')
             ->sum('total_bayar');
 
-        $tiketHariIni = Pemesanan::where('sales_id', $salesId)
+        $tiketHariIni = (clone $baseQuery)
             ->whereDate('tanggal_transaksi', $hariIni)
             ->withCount('penumpangs')
             ->get()->sum('penumpangs_count');
 
-        $totalPenjualan = Pemesanan::where('sales_id', $salesId)->sum('total_bayar');
+        $totalPenjualan = (clone $baseQuery)->where('status_pembayaran', 'lunas')->sum('total_bayar');
 
-        $totalTiket = Pemesanan::where('sales_id', $salesId)
+        $totalTiket = (clone $baseQuery)
             ->withCount('penumpangs')
             ->get()->sum('penumpangs_count');
 
-        $transaksiTerbaru = Pemesanan::with(['jadwal.rute'])
-            ->where('sales_id', $salesId)
+        $transaksiTerbaru = (clone $baseQuery)->with(['jadwal.rute'])
             ->orderByDesc('tanggal_transaksi')
             ->take(5)
             ->get();

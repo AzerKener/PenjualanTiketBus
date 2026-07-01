@@ -51,9 +51,12 @@ class HomeController extends Controller
                 $q->whereHas('rute', fn ($r) => $r->where('tujuan', $request->tujuan));
             })
             ->when($request->filled('tanggal_berangkat'), function ($q) use ($request) {
-                $q->whereDate('tanggal_berangkat', $request->tanggal_berangkat);
+                // Jika mencari tanggal tertentu, pastikan jamnya belum lewat batas boarding (60 menit)
+                $q->whereDate('tanggal_berangkat', $request->tanggal_berangkat)
+                  ->whereRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) > ?", [now()->addMinutes(60)]);
             }, function ($q) {
-                $q->whereDate('tanggal_berangkat', '>=', now()->toDateString());
+                // Default: tampilkan yang belum lewat batas boarding (60 menit)
+                $q->whereRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) > ?", [now()->addMinutes(60)]);
             })
             ->where('status', 'menunggu')
             ->when($request->filled('tipe_bus'), fn ($q) => $q->whereHas('bus', fn ($b) => $b->where('tipe_bus', $request->tipe_bus)))

@@ -224,6 +224,15 @@ class JadwalController extends Controller
 
         $jadwal->update($validated);
 
+        // Notify all users who booked this schedule
+        $users = \App\Models\User::whereHas('pemesanans', function ($query) use ($jadwal) {
+            $query->where('jadwal_id', $jadwal->id)->whereIn('status_pembayaran', ['lunas', 'selesai', 'pending']);
+        })->get();
+
+        foreach ($users as $user) {
+            $user->notify(new \App\Notifications\PerubahanJadwal($jadwal));
+        }
+
         return redirect()->route('admin.jadwal.index')
             ->with('success', 'Jadwal berhasil diperbarui.');
     }

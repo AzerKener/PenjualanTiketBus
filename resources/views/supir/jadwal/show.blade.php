@@ -62,9 +62,9 @@
                         Mulai Boarding
                     </button>
                 @elseif($jadwal->status === 'boarding')
-                    <button type="submit" name="status" value="berangkat" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-sm text-center">
-                        Bus Berangkat
-                    </button>
+                    <div class="flex-1 bg-amber-50 text-amber-600 font-semibold py-3 px-4 rounded-xl text-center border border-amber-200">
+                        Sedang Boarding (Otomatis Berangkat Sesuai Jadwal)
+                    </div>
                 @elseif($jadwal->status === 'berangkat')
                     <button type="submit" name="status" value="tiba" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-sm text-center">
                         Tiba di Tujuan

@@ -32,8 +32,27 @@
                             if($data['color'] == 'amber') $iconClass = 'text-amber-500 bg-amber-50';
                         }
                     @endphp
-                    <li class="p-4 hover:bg-slate-50 transition">
-                        <div class="flex gap-4">
+                    @php
+                        $notifUrl = '#';
+                        if (isset($data['url'])) {
+                            $notifUrl = $data['url'];
+                        } elseif (isset($data['pemesanan_id'])) {
+                            if (auth()->user()->role === 'Admin') {
+                                $notifUrl = route('admin.transaksi.index', ['keyword' => str_pad($data['pemesanan_id'], 6, '0', STR_PAD_LEFT)]);
+                            } elseif (auth()->user()->role === 'Sales') {
+                                $notifUrl = route('sales.transaksi.index', ['search' => str_pad($data['pemesanan_id'], 6, '0', STR_PAD_LEFT)]);
+                            } else {
+                                $pemesananNotif = \App\Models\Pemesanan::find($data['pemesanan_id']);
+                                if ($pemesananNotif && $pemesananNotif->status_pembayaran === 'lunas') {
+                                    $notifUrl = route('user.etiket', $data['pemesanan_id']);
+                                } else {
+                                    $notifUrl = route('user.pesan.sukses', $data['pemesanan_id']);
+                                }
+                            }
+                        }
+                    @endphp
+                    <li class="hover:bg-slate-50 transition border-b border-slate-100 last:border-0">
+                        <a href="{{ $notifUrl }}" class="flex gap-4 p-4 block w-full">
                             <div class="flex-shrink-0">
                                 <div class="w-10 h-10 rounded-full flex items-center justify-center {{ $iconClass }}">
                                     @if(isset($data['icon']) && $data['icon'] == 'clock')
@@ -58,7 +77,7 @@
                                     {{ $notif->created_at->diffForHumans() }}
                                 </p>
                             </div>
-                        </div>
+                        </a>
                     </li>
                 @endforeach
             </ul>

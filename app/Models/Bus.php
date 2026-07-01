@@ -19,7 +19,7 @@ class Bus extends Model
 
             'Ekonomi' => [
                 ['icon'=>'❄️','nama'=>'AC'],
-                ['icon'=>'🧳','nama'=>'Bagasi Gratis 20 Kg'],
+                ['icon'=>'🧳','nama'=>'Bagasi Gratis 15 Kg'],
                 ['icon'=>'💧','nama'=>'Air Mineral'],
             ],
 
@@ -28,7 +28,7 @@ class Bus extends Model
                 ['icon'=>'📶','nama'=>'WiFi'],
                 ['icon'=>'🔌','nama'=>'USB Charger'],
                 ['icon'=>'💺','nama'=>'Reclining Seat'],
-                ['icon'=>'🧳','nama'=>'Bagasi Gratis 20 Kg'],
+                ['icon'=>'🧳','nama'=>'Bagasi Gratis 15 Kg'],
                 ['icon'=>'💧','nama'=>'Air Mineral'],
                 ['icon'=>'🛏️','nama'=>'Selimut'],
             ],
@@ -39,7 +39,7 @@ class Bus extends Model
                 ['icon'=>'🔌','nama'=>'USB Charger'],
                 ['icon'=>'📺','nama'=>'TV'],
                 ['icon'=>'🍱','nama'=>'Snack'],
-                ['icon'=>'🧳','nama'=>'Bagasi Gratis 20 Kg'],
+                ['icon'=>'🧳','nama'=>'Bagasi Gratis 15 Kg'],
                 ['icon'=>'🚻','nama'=>'Toilet'],
                 ['icon'=>'💺','nama'=>'Reclining Seat'],
                 ['icon'=>'🦶','nama'=>'Foot Rest'],

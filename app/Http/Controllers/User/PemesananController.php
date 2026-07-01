@@ -45,7 +45,7 @@ class PemesananController extends Controller
         $jadwalPulangList = Jadwal::with(['bus', 'pool'])
             ->whereHas('rute', fn ($q) => $q->where('asal', $jadwal->rute->tujuan)
                 ->where('tujuan', $jadwal->rute->asal))
-            ->where('tanggal_berangkat', '>=', $jadwal->tanggal_berangkat)
+            ->whereDate('tanggal_berangkat', '>', $jadwal->tanggal_berangkat)
             ->where('status', 'menunggu')
             ->orderBy('tanggal_berangkat')
             ->orderBy('waktu_berangkat')
@@ -111,9 +111,9 @@ class PemesananController extends Controller
         $hargaPergi   = $jadwalPergi->harga_tiket * $jumlahKursi;
         $hargaPulang  = $jadwalPulang ? ($jadwalPulang->harga_tiket * $jumlahKursi) : 0;
 
-        // Hitung biaya bagasi tambahan (gratis 20 Kg pertama, Rp 10.000/kg sisanya)
+        // Hitung biaya tambahan bagasi (input adalah jumlah kg tambahan, Rp 10.000/kg)
         $bagasiKg     = (int) ($request->input('bagasi', 0));
-        $biayaBagasi  = $bagasiKg > 20 ? ($bagasiKg - 20) * 10000 : 0;
+        $biayaBagasi  = $bagasiKg > 0 ? $bagasiKg * 10000 : 0;
 
         $totalBayar       = $hargaPergi + $hargaPulang + $biayaBagasi;
         // Semua pemesanan online (termasuk Cash) masuk ke status pending.
@@ -162,6 +162,30 @@ class PemesananController extends Controller
 
             DB::commit();
 
+            // Notifikasi In-App
+            if (Auth::check()) {
+                Auth::user()->notify(new \App\Notifications\InfoPembayaran($pemesanan));
+            }
+
+            // Notify Admin (Pesanan Baru Masuk)
+            $adminUsers = \App\Models\User::where('role', 'Admin')->get();
+            foreach ($adminUsers as $admin) {
+                \Illuminate\Support\Facades\Notification::send($admin, new \App\Notifications\PesananBaruAdmin($pemesanan));
+            }
+
+            // Pengiriman tagihan WhatsApp ke pemesan dihapus sesuai instruksi
+
+            // Kirim notifikasi In-App ke Sales Pool asal jika pembayaran Cash
+            if ($request->metode_pembayaran === 'Cash') {
+                $salesUsers = \App\Models\User::where('role', 'Sales')
+                    ->where('pool_id', $jadwalPergi->pool_id)
+                    ->get();
+                    
+                foreach ($salesUsers as $sales) {
+                    \Illuminate\Support\Facades\Notification::send($sales, new \App\Notifications\PesananBaruSales($pemesanan));
+                }
+            }
+
             // Jika metode pembayaran adalah Transfer, buat Snap Token Midtrans
             if ($request->metode_pembayaran === 'Transfer') {
                 $midtransService = app(\App\Services\MidtransService::class);
@@ -172,23 +196,9 @@ class PemesananController extends Controller
                 }
             }
 
-            // Kirim notifikasi tagihan (Invoice) via WhatsApp
-            if ($pemesanan->no_hp_pemesan) {
-                $twilio = app(\App\Services\TwilioService::class);
-                $jadwalStr = $jadwalPergi->rute->asal . ' ke ' . $jadwalPergi->rute->tujuan;
-                $message = "Halo {$pemesanan->nama_pemesan},\n\n";
-                $message .= "Pemesanan tiket Anda berhasil dicatat.\n";
-                $message .= "Rute: {$jadwalStr}\n";
-                $message .= "Tanggal: {$jadwalPergi->tanggal_berangkat->format('d M Y')}\n";
-                $message .= "Total Tagihan: Rp " . number_format($totalBayar, 0, ',', '.') . "\n";
-                $message .= "Metode Bayar: {$request->metode_pembayaran}\n\n";
-                $message .= "Silakan lakukan pembayaran agar tiket dapat segera diterbitkan.";
-
-                $twilio->sendWhatsAppMessage($pemesanan->no_hp_pemesan, $message);
-            }
-
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Pemesanan Error: ' . $e->getMessage() . ' di baris ' . $e->getLine());
             return back()->withErrors(['general' => 'Terjadi kesalahan sistem. Silakan coba lagi.'])->withInput();
         }
 
@@ -263,7 +273,8 @@ class PemesananController extends Controller
 
         $jadwals = Jadwal::with(['bus', 'pool', 'penumpangs'])
             ->whereHas('rute', fn ($q) => $q->where('asal', $request->tujuan)->where('tujuan', $request->asal))
-            ->where('tanggal_berangkat', '>=', $request->tanggal)
+            ->whereDate('tanggal_berangkat', $request->tanggal)
+            ->whereRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) > ?", [now()->addMinutes(60)])
             ->where('status', 'menunggu')
             ->orderBy('tanggal_berangkat')
             ->orderBy('waktu_berangkat')

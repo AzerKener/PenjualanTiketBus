@@ -72,22 +72,42 @@
                     <td class="p-4 text-sm font-bold text-slate-800">Rp {{ number_format($trx->total_bayar, 0, ',', '.') }}</td>
                     <td class="p-4">
                         @if($trx->status_pembayaran === 'lunas')
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
-                            </span>
-                        @else
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
+                                </span>
+                                <a href="{{ route('sales.transaksi.etiket', $trx->id) }}" target="_blank" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm whitespace-nowrap">
+                                    Lihat E-Ticket
+                                </a>
+                            </div>
+                        @elseif($trx->status_pembayaran === 'pending')
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                                    <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Pending
+                                    <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></span> Menunggu Pembayaran
                                 </span>
-                                <form method="POST" action="{{ route('sales.transaksi.konfirmasi', $trx->id) }}" onsubmit="return confirm('Konfirmasi bahwa uang cash sudah diterima dari {{ $trx->nama_pemesan }} sejumlah Rp {{ number_format($trx->total_bayar, 0, ',', '.') }}?')">
+                                
+                                <form action="{{ route('sales.transaksi.konfirmasi', $trx->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm">
-                                        Konfirmasi Bayar
+                                    <button type="submit" class="px-3 py-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border border-emerald-200 hover:border-transparent text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap" onclick="return confirm('Konfirmasi bahwa pembayaran telah diterima?')">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        Konfirmasi
+                                    </button>
+                                </form>
+
+                                <form action="{{ route('sales.transaksi.tolak', $trx->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-200 hover:border-transparent text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap" onclick="return confirm('Tolak transaksi ini? Transaksi batal dan kursi akan dilepas.')">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        Tolak
                                     </button>
                                 </form>
                             </div>
+                        @else
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Batal
+                            </span>
                         @endif
                         @if($trx->tipe_pemesanan === 'Online')
                             <span class="block mt-1 text-[10px] uppercase font-bold text-blue-500">Pemesanan Online</span>

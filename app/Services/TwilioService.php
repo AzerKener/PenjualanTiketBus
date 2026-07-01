@@ -39,19 +39,8 @@ class TwilioService
             return false;
         }
 
-        try {
-            $this->client->messages->create(
-                "whatsapp:" . $formattedNumber,
-                [
-                    "from" => $this->from,
-                    "body" => $message
-                ]
-            );
-            return true;
-        } catch (\Exception $e) {
-            Log::error('Twilio send error: ' . $e->getMessage());
-            return false;
-        }
+        // Fitur pengiriman WhatsApp dinonaktifkan sesuai permintaan (fokus notifikasi In-App)
+        return true;
     }
 
     /**

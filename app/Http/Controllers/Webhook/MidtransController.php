@@ -36,6 +36,10 @@ class MidtransController extends Controller
             if ($pemesanan->status_pembayaran !== 'lunas') {
                 $pemesanan->update(['status_pembayaran' => 'lunas']);
 
+                if ($pemesanan->user) {
+                    $pemesanan->user->notify(new \App\Notifications\UpdateStatusTiket($pemesanan, 'lunas'));
+                }
+
                 // Kirim notifikasi WA E-Ticket
                 if ($pemesanan->no_hp_pemesan) {
                     $twilio = app(TwilioService::class);
@@ -53,6 +57,13 @@ class MidtransController extends Controller
             }
         } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
             $pemesanan->update(['status_pembayaran' => 'batal']);
+            
+            // Hapus data penumpang agar kursi kembali kosong
+            $pemesanan->penumpangs()->delete();
+
+            if ($pemesanan->user) {
+                $pemesanan->user->notify(new \App\Notifications\UpdateStatusTiket($pemesanan, 'dibatalkan', 'Pembayaran kadaluarsa atau dibatalkan otomatis oleh sistem.'));
+            }
         } else if ($transactionStatus == 'pending') {
             $pemesanan->update(['status_pembayaran' => 'pending']);
         }

@@ -39,6 +39,7 @@ class PemesananController extends Controller
                   ->where('tujuan', $request->tujuan);
             })
             ->whereDate('tanggal_berangkat', $request->tanggal_berangkat)
+            ->whereRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) > ?", [now()->addMinutes(60)])
             ->whereNotIn('status', ['selesai', 'dibatalkan']);
 
         if ($pegawai && $pegawai->pool_id) {
@@ -86,7 +87,8 @@ class PemesananController extends Controller
         $jadwalPulangList = Jadwal::with(['bus', 'rute'])
             ->whereHas('rute', fn($q) => $q->where('asal', $jadwal->rute->tujuan)
                                            ->where('tujuan', $jadwal->rute->asal))
-            ->whereDate('tanggal_berangkat', '>=', $jadwal->tanggal_berangkat)
+            ->whereDate('tanggal_berangkat', '>', $jadwal->tanggal_berangkat)
+            ->whereRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) > ?", [now()->addMinutes(60)])
             ->whereNotIn('status', ['selesai', 'dibatalkan'])
             ->orderBy('tanggal_berangkat')->orderBy('waktu_berangkat')
             ->get();
@@ -140,9 +142,10 @@ class PemesananController extends Controller
 
         DB::beginTransaction();
         try {
+            $matchedUser = \App\Models\User::where('no_hp', $validated['no_hp_pemesan'])->first();
             $pemesanan = Pemesanan::create([
-                'jadwal_id'         => $validated['jadwal_id'],
-                'jadwal_pulang_id'  => $isRoundTrip ? $validated['jadwal_pulang_id'] : null,
+                'jadwal_id'         => $jadwal->id,
+                'jadwal_pulang_id'  => $jadwalPulang?->id,
                 'tipe_pemesanan'    => 'Sales_Pool',
                 'metode_pembayaran' => 'Cash',
                 'total_bayar'       => $totalBayar,
@@ -152,6 +155,7 @@ class PemesananController extends Controller
                 'tanggal_transaksi' => now(),
                 'sales_id'          => Auth::id(),
                 'status_pembayaran' => 'lunas',
+                'user_id'           => $matchedUser?->id,
             ]);
 
             foreach ($validated['kursi'] as $i => $nomorKursi) {
@@ -175,6 +179,10 @@ class PemesananController extends Controller
             }
 
             DB::commit();
+
+            if ($pemesanan->user) {
+                $pemesanan->user->notify(new \App\Notifications\UpdateStatusTiket($pemesanan, 'lunas'));
+            }
 
             $pemesanan->load(['jadwal.rute', 'jadwal.bus', 'jadwalPulang.rute', 'jadwalPulang.bus', 'penumpangsPergi', 'penumpangsPulang']);
 

@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class NotifikasiController extends Controller
 {
+    public function unread()
+    {
+        return response()->json([
+            'count' => Auth::user()->unreadNotifications->count()
+        ]);
+    }
+
     /**
      * Tampilkan semua notifikasi user yang login.
      */

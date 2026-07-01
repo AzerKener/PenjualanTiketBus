@@ -6,6 +6,12 @@
         x-data='pemesanan(@json($semuaKursi), @json($kursiTerisi), {{ $jadwal->id }}, {{ $jadwal->harga_tiket }})'>
 
         {{-- Progress Steps --}}
+        @if($errors->has('general'))
+            <div class="mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm">
+                <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                {{ $errors->first('general') }}
+            </div>
+        @endif
         <div class="flex items-center gap-2 mb-8">
             <div class="flex items-center gap-2">
                 <div :class="step === 1 ? 'bg-blue-600 text-white' : 'bg-green-500 text-white'"
@@ -471,35 +477,27 @@
                         </h2>
 
                         <div class="space-y-4">
-
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-semibold text-slate-700">
-                                        Gratis 20 Kg
-                                    </p>
-                                    <p class="text-xs text-slate-500">
-                                        Tambahan bagasi dikenakan biaya Rp10.000/Kg
-                                    </p>
-                                </div>
+                            <div class="flex items-center gap-2 text-slate-500">
+                                <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                                <p class="text-xs">Gratis bagasi 15 Kg per penumpang. Tambahan dikenakan Rp10.000/Kg</p>
                             </div>
 
                             <div>
                                 <label class="text-sm font-medium text-slate-700">
                                     Tambahan Bagasi (Kg)
                                 </label>
-
-                                <input type="number" min="0" x-model.number="bagasi" placeholder="0"
-                                    class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                                <div class="relative">
+                                    <input type="number" min="0" x-model.number="bagasi" placeholder="0"
+                                        class="w-full pl-4 pr-12 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-800 bg-white shadow-sm" />
+                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">Kg</div>
+                                </div>
+                                <div class="mt-2 text-sm flex justify-between items-center text-slate-500">
+                                    <span>Biaya Tambahan Bagasi</span>
+                                    <span class="font-bold text-slate-700" 
+                                        x-text="bagasi > 0 ? 'Rp ' + (bagasi * 10000).toLocaleString('id-ID') : 'Rp 0'">
+                                    </span>
+                                </div>
                             </div>
-
-                            <div class="flex justify-between text-sm">
-                                <span>Biaya Bagasi</span>
-
-                                <span class="font-bold text-blue-600"
-                                    x-text="bagasi > 20 ? 'Rp ' + ((bagasi - 20) * 10000).toLocaleString('id-ID') : 'Gratis'">
-                                </span>
-                            </div>
-
                         </div>
                     </div>
 
@@ -639,16 +637,13 @@
                                         <div class="flex items-center gap-2">
                                             <span class="text-2xl">💵</span>
                                             <span class="font-semibold text-slate-800">Tunai (Cash)</span>
-                                            <span
-                                                class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Langsung
-                                                Lunas</span>
                                         </div>
                                         <p class="text-xs text-slate-500 mt-1">Bayar langsung di pool keberangkatan sebelum
                                             bus berangkat.</p>
                                     </div>
                                 </label>
 
-                                {{-- TRANSFER (MIDTRANS) --}}
+                                {{-- TRANSFER BANK --}}
                                 <label class="flex items-start gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all"
                                     :class="metodePembayaran === 'Transfer' ? 'border-blue-500 bg-blue-50' :
                                         'border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'">
@@ -658,15 +653,14 @@
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
                                             <span class="text-2xl">💳</span>
-                                            <span class="font-semibold text-slate-800">E-Payment & Virtual Account</span>
+                                            <span class="font-semibold text-slate-800">Transfer Bank</span>
                                             <span
-                                                class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                                Otomatis
+                                                class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                                                Perlu Konfirmasi
                                             </span>
                                         </div>
-                                        <p class="text-xs text-slate-500 mt-1">Gopay, OVO, ShopeePay, BCA VA, Mandiri VA, BNI VA, Kartu Kredit dll. Terverifikasi otomatis.</p>
-                                        {{-- Instruksi Transfer --}}
+                                        <p class="text-xs text-slate-500 mt-1">BCA, Mandiri, BNI, dll. Admin akan memverifikasi pembayaran Anda.</p>
+                                        {{-- Instruksi Transfer Bank --}}
                                         <div x-show="metodePembayaran === 'Transfer'" x-cloak
                                             class="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
                                             <div class="flex items-start gap-3">
@@ -674,10 +668,9 @@
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                 </div>
                                                 <p class="text-xs text-blue-800 pt-1 leading-relaxed">
-                                                    Anda akan diarahkan ke halaman pembayaran aman setelah menekan tombol konfirmasi. Status tiket akan otomatis Lunas setelah pembayaran berhasil, tanpa perlu konfirmasi manual!
+                                                    Silakan transfer ke Rekening BCA: 1234567890 a.n. BusTicket (Rekening Saya). Pesanan Anda akan dikonfirmasi secara manual oleh Admin setelah pembayaran.
                                                 </p>
                                             </div>
-                                            </p>
                                         </div>
                                     </div>
                                 </label>
@@ -702,27 +695,14 @@
                                         {{-- Instruksi E-Wallet --}}
                                         <div x-show="metodePembayaran === 'E-Wallet'" x-cloak
                                             class="mt-3 p-3 bg-purple-50 rounded-xl border border-purple-200">
-                                            <p class="text-xs font-semibold text-purple-700 mb-2">Nomor E-Wallet:</p>
+                                            <p class="text-xs font-semibold text-purple-700 mb-2">Silakan kirim uang ke nomor saya:</p>
                                             <div class="space-y-1.5 text-xs text-purple-800">
                                                 <div class="flex items-center justify-between">
-                                                    <span class="flex items-center gap-1">🟢 GoPay / DANA</span>
-                                                    <span class="font-mono font-bold text-sm">0812-0000-0001</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span class="flex items-center gap-1">🔵 OVO</span>
-                                                    <span class="font-mono font-bold text-sm">0812-0000-0002</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span class="flex items-center gap-1">🟠 ShopeePay</span>
-                                                    <span class="font-mono font-bold text-sm">0812-0000-0003</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span>a.n.</span>
-                                                    <span class="font-semibold">BusTicket Official</span>
+                                                    <span class="font-mono font-bold text-sm">081296374250</span>
                                                 </div>
                                             </div>
                                             <p class="text-xs text-purple-600 mt-2 font-medium">
-                                                ⚠️ Screenshot bukti transfer & kirim ke WA: 0812-9999-0000
+                                                ⚠️ Screenshot bukti transfer & kirim ke WA Admin jika diperlukan.
                                             </p>
                                         </div>
                                     </div>
@@ -763,13 +743,13 @@
                                 </div>
                             </div>
                             <div class="border-t border-slate-700 pt-2 mt-2">
-                                <div class="flex justify-between text-slate-300">
+                                <div class="flex justify-between text-slate-300 font-medium" x-show="bagasi > 0" x-cloak>
                                     <span>Tambahan Bagasi</span>
-                                    <span x-text="bagasi + ' Kg' + (bagasi <= 20 ? ' (Gratis)' : '')"></span>
+                                    <span x-text="bagasi + ' Kg'"></span>
                                 </div>
-                                <div class="flex justify-between text-slate-300 font-medium" x-show="bagasi > 20" x-cloak>
-                                    <span></span>
-                                    <span x-text="'Rp ' + ((bagasi - 20) * 10000).toLocaleString('id-ID')">
+                                <div class="flex justify-between text-slate-300 font-medium" x-show="bagasi > 0" x-cloak>
+                                    <span>Biaya Tambahan Bagasi</span>
+                                    <span x-text="'Rp ' + (bagasi * 10000).toLocaleString('id-ID')">
                                     </span>
                                 </div>
                             </div>
@@ -927,7 +907,7 @@
                             0;
 
                         // Gratis 20 Kg pertama, sisanya Rp 10.000/Kg
-                        const biayaBagasi = this.bagasi > 20 ? (this.bagasi - 20) * 10000 : 0;
+                        const biayaBagasi = this.bagasi > 0 ? this.bagasi * 10000 : 0;
 
                         return pergi + pulang + biayaBagasi;
                     },

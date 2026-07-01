@@ -39,8 +39,13 @@ class TransaksiController extends Controller
             })
             ->when($request->filled('keyword'), function ($q) use ($request) {
                 $keyword = $request->keyword;
-                $q->where(function ($sub) use ($keyword) {
-                    $sub->where('nama_pemesan', 'like', '%' . $keyword . '%')
+                $searchId = ltrim($keyword, '0');
+                if ($searchId === '') {
+                    $searchId = '0'; // Handle if keyword is '000000'
+                }
+                $q->where(function ($sub) use ($keyword, $searchId) {
+                    $sub->where('id', $searchId)
+                        ->orWhere('nama_pemesan', 'like', '%' . $keyword . '%')
                         ->orWhere('no_hp_pemesan', 'like', '%' . $keyword . '%');
                 });
             })
@@ -76,6 +81,11 @@ class TransaksiController extends Controller
     {
         $pemesanan->update(['status_pembayaran' => 'lunas']);
         
+        // Kirim notifikasi In-App ke User
+        if ($pemesanan->user) {
+            $pemesanan->user->notify(new \App\Notifications\UpdateStatusTiket($pemesanan, 'lunas'));
+        }
+
         // Kirim notifikasi E-Tiket via WhatsApp
         if ($pemesanan->no_hp_pemesan) {
             $twilio = app(\App\Services\TwilioService::class);
@@ -88,5 +98,23 @@ class TransaksiController extends Controller
         }
 
         return back()->with('success', 'Pembayaran transaksi #' . $pemesanan->id . ' berhasil dikonfirmasi menjadi Lunas.');
+    }
+
+    public function tolak(Pemesanan $pemesanan)
+    {
+        $pemesanan->update(['status_pembayaran' => 'batal']);
+        
+        // Hapus data penumpang agar kursi kembali tersedia
+        $pemesanan->penumpangs()->delete();
+
+        // Pengiriman notifikasi WA penolakan dihapus sesuai instruksi
+
+        return back()->with('success', 'Transaksi #' . $pemesanan->id . ' berhasil ditolak/dibatalkan.');
+    }
+
+    public function etiket(Pemesanan $pemesanan)
+    {
+        $pemesanan->load(['jadwal.rute', 'jadwal.bus', 'jadwal.pool', 'jadwalPulang.rute', 'jadwalPulang.bus', 'penumpangs']);
+        return view('user.etiket', compact('pemesanan'));
     }
 }

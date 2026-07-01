@@ -337,8 +337,12 @@
             allSupir1Options.forEach(opt => {
                 if (opt.getAttribute('data-pool') === selectedPoolId) {
                     opt.style.display = '';
+                    opt.hidden = false;
+                    opt.disabled = false;
                 } else {
                     opt.style.display = 'none';
+                    opt.hidden = true;
+                    opt.disabled = true;
                     if (supir1Select.value === opt.value) supir1Select.value = "";
                 }
             });
@@ -347,8 +351,12 @@
             allSupir2Options.forEach(opt => {
                 if (opt.getAttribute('data-pool') === selectedPoolId) {
                     opt.style.display = '';
+                    opt.hidden = false;
+                    opt.disabled = false;
                 } else {
                     opt.style.display = 'none';
+                    opt.hidden = true;
+                    opt.disabled = true;
                     if (supir2Select.value === opt.value) supir2Select.value = "";
                 }
             });
@@ -357,9 +365,53 @@
             allKenekOptions.forEach(opt => {
                 if (opt.getAttribute('data-pool') === selectedPoolId) {
                     opt.style.display = '';
+                    opt.hidden = false;
+                    opt.disabled = false;
                 } else {
                     opt.style.display = 'none';
+                    opt.hidden = true;
+                    opt.disabled = true;
                     if (kenekSelect.value === opt.value) kenekSelect.value = "";
+                }
+            });
+
+            preventDuplicateSupir();
+        }
+
+        function preventDuplicateSupir() {
+            const selectedPoolId = poolAsalSelect.value;
+            if (!selectedPoolId) return;
+
+            const s1 = supir1Select.value;
+            const s2 = supir2Select.value;
+
+            // Supir 2 options: hide the one selected in Supir 1
+            allSupir2Options.forEach(opt => {
+                if (opt.getAttribute('data-pool') === selectedPoolId) {
+                    if (opt.value !== "" && opt.value === s1) {
+                        opt.style.display = 'none';
+                        opt.hidden = true;
+                        opt.disabled = true;
+                    } else {
+                        opt.style.display = '';
+                        opt.hidden = false;
+                        opt.disabled = false;
+                    }
+                }
+            });
+
+            // Supir 1 options: hide the one selected in Supir 2
+            allSupir1Options.forEach(opt => {
+                if (opt.getAttribute('data-pool') === selectedPoolId) {
+                    if (opt.value !== "" && opt.value === s2) {
+                        opt.style.display = 'none';
+                        opt.hidden = true;
+                        opt.disabled = true;
+                    } else {
+                        opt.style.display = '';
+                        opt.hidden = false;
+                        opt.disabled = false;
+                    }
                 }
             });
         }
@@ -367,6 +419,8 @@
         // Jalankan saat berubah
         ruteSelect.addEventListener('change', updatePools);
         poolAsalSelect.addEventListener('change', updatePetugas);
+        supir1Select.addEventListener('change', preventDuplicateSupir);
+        supir2Select.addEventListener('change', preventDuplicateSupir);
 
         // Jalankan saat pertama kali dimuat
         if (ruteSelect.value) {

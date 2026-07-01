@@ -83,6 +83,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:Admin'])->grou
     Route::get('/laporan/export-csv', [Admin\LaporanController::class, 'exportCsv'])->name('laporan.exportCsv');
     Route::get('/transaksi', [Admin\TransaksiController::class,  'index'])->name('transaksi.index');
     Route::patch('/transaksi/{pemesanan}/konfirmasi', [Admin\TransaksiController::class, 'konfirmasi'])->name('transaksi.konfirmasi');
+    Route::patch('/transaksi/{pemesanan}/tolak', [Admin\TransaksiController::class, 'tolak'])->name('transaksi.tolak');
+    Route::get('/transaksi/{pemesanan}/etiket', [Admin\TransaksiController::class, 'etiket'])->name('transaksi.etiket');
     
     Route::get('/rating',    [Admin\RatingController::class, 'index'])->name('rating.index');
     
@@ -101,6 +103,9 @@ Route::prefix('sales')->name('sales.')->middleware(['auth', 'role:Sales'])->grou
     Route::post('/pemesanan/jadwal-pulang',     [Sales\PemesananController::class,  'getJadwalPulang'])->name('pemesanan.jadwalPulang');
     Route::get('/transaksi',                    [Sales\TransaksiController::class,  'index'])->name('transaksi.index');
     Route::patch('/transaksi/{pemesanan}/konfirmasi', [Sales\TransaksiController::class, 'konfirmasi'])->name('transaksi.konfirmasi');
+    Route::patch('/transaksi/{pemesanan}/tolak', [Sales\TransaksiController::class, 'tolak'])->name('transaksi.tolak');
+    Route::get('/transaksi/{pemesanan}/etiket', [Sales\TransaksiController::class, 'etiket'])->name('transaksi.etiket');
+    Route::get('/laporan',                      [Sales\LaporanController::class,    'index'])->name('laporan.index');
     Route::get('/akun',                         [Sales\AkunController::class,       'index'])->name('akun.index');
 });
 
@@ -120,4 +125,11 @@ Route::prefix('kenek')->name('kenek.')->middleware(['auth', 'role:Kenek'])->grou
     Route::get('/jadwal',    [Kenek\JadwalController::class, 'index'])->name('jadwal.index');
     
     Route::get('/akun',      [Kenek\AkunController::class, 'index'])->name('akun.index');
+});
+
+// ─── Shared Authenticated Routes ──────────────────────────────────────────────
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifikasi/unread', [App\Http\Controllers\NotifikasiController::class, 'unread'])->name('notifikasi.unread');
+    Route::get('/notifikasi', [App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::delete('/notifikasi/clear', [App\Http\Controllers\NotifikasiController::class, 'clear'])->name('notifikasi.clear');
 });

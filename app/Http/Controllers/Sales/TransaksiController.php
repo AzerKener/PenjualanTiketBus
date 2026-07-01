@@ -24,8 +24,10 @@ class TransaksiController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            // Jika search berupa angka (mungkin ID pesanan), hilangkan prefix 0
             $searchId = ltrim($search, '0');
+            if ($searchId === '') {
+                $searchId = '0';
+            }
             $query->where(function ($q) use ($search, $searchId) {
                 $q->where('id', $searchId)
                   ->orWhere('nama_pemesan', 'like', "%{$search}%")
@@ -45,6 +47,11 @@ class TransaksiController extends Controller
             'sales_id' => Auth::id() // Assign to the sales who confirmed it
         ]);
         
+        // Kirim notifikasi In-App ke User
+        if ($pemesanan->user) {
+            $pemesanan->user->notify(new \App\Notifications\UpdateStatusTiket($pemesanan, 'lunas'));
+        }
+
         // Kirim notifikasi E-Tiket via WhatsApp
         if ($pemesanan->no_hp_pemesan) {
             $twilio = app(\App\Services\TwilioService::class);
@@ -57,5 +64,23 @@ class TransaksiController extends Controller
         }
 
         return back()->with('success', 'Pembayaran tiket #' . str_pad($pemesanan->id, 6, '0', STR_PAD_LEFT) . ' berhasil dikonfirmasi menjadi Lunas.');
+    }
+
+    public function tolak(Pemesanan $pemesanan)
+    {
+        $pemesanan->update(['status_pembayaran' => 'batal']);
+        
+        // Hapus data penumpang agar kursi kembali tersedia
+        $pemesanan->penumpangs()->delete();
+
+        // Pengiriman notifikasi WA penolakan dihapus sesuai instruksi
+
+        return back()->with('success', 'Transaksi #' . str_pad($pemesanan->id, 6, '0', STR_PAD_LEFT) . ' berhasil ditolak/dibatalkan.');
+    }
+
+    public function etiket(Pemesanan $pemesanan)
+    {
+        $pemesanan->load(['jadwal.rute', 'jadwal.bus', 'jadwal.pool', 'jadwalPulang.rute', 'jadwalPulang.bus', 'penumpangs']);
+        return view('user.etiket', compact('pemesanan'));
     }
 }

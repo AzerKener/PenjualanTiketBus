@@ -60,7 +60,7 @@
                         </p>
 
                         <p id="countdown" class="text-3xl font-bold text-red-600">
-                            02:00:00
+                            08:00:00
                         </p>
 
                         <p class="text-xs text-slate-500 mt-1">
@@ -74,7 +74,7 @@
                         </p>
 
                         <p class="font-semibold">
-                            {{ $pemesanan->created_at->addHours(2)->format('d M Y H:i') }}
+                            {{ $pemesanan->created_at->addHours(8)->format('d M Y H:i') }}
                         </p>
                     </div>
 
@@ -398,7 +398,7 @@
     });
 
     @if ($pemesanan->status_pembayaran == 'pending')
-        const deadline = {{ $pemesanan->created_at->addHours(2)->timestamp * 1000 }};
+        const deadline = {{ $pemesanan->created_at->addHours(8)->timestamp * 1000 }};
 
         function updateCountdown() {
 
