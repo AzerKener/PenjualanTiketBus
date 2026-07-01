@@ -15,3 +15,4 @@ Schedule::command('jadwal:berangkat')->everyMinute();
 Schedule::command('pemesanan:cancel-unpaid')->everyMinute();
 Schedule::command('jadwal:boarding')->everyMinute();
 Schedule::command('jadwal:pengingat-kedatangan')->everyMinute();
+Schedule::command('jadwal:selesai')->everyMinute();

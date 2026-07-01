@@ -29,7 +29,7 @@ class KeberangkatanReminder extends Notification
 
     public function toDatabase(object $notifiable): array
     {
-        $waktuStr = Carbon::parse($this->jadwal->tanggal_berangkat . ' ' . $this->jadwal->waktu_berangkat)->isoFormat('D MMMM Y, HH:mm');
+        $waktuStr = Carbon::parse(Carbon::parse($this->jadwal->tanggal_berangkat)->format('Y-m-d') . ' ' . $this->jadwal->waktu_berangkat)->isoFormat('D MMMM Y, HH:mm');
         $ruteStr = $this->jadwal->rute->asal . ' ke ' . $this->jadwal->rute->tujuan;
 
         $pesan = '';

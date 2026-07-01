@@ -30,7 +30,7 @@ class JadwalController extends Controller
             ])->with('warning', 'Data pegawai tidak ditemukan. Silakan hubungi administrator.');
         }
 
-        $jadwals = Jadwal::with(['bus', 'rute', 'pool', 'supir1', 'supir2', 'kenek'])
+        $jadwals = Jadwal::with(['bus', 'rute', 'pool', 'supir1', 'supir2', 'kenek', 'penumpangs.pemesanan'])
             ->where(function ($q) use ($pegawai) {
                 $q->where('supir1_id', $pegawai->id)
                   ->orWhere('supir2_id', $pegawai->id);

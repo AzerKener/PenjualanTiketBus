@@ -125,6 +125,24 @@
                                 class="inline-flex items-center mt-0.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">PENDING</span>
                         @endif
                     </div>
+                    @if($pemesanan->jadwal->supir1)
+                    <div class="bg-slate-50 rounded-xl p-3">
+                        <p class="text-xs text-slate-400 font-medium uppercase">Supir 1</p>
+                        <p class="font-bold text-slate-700 mt-0.5 text-sm">{{ $pemesanan->jadwal->supir1->nama }}</p>
+                    </div>
+                    @endif
+                    @if($pemesanan->jadwal->supir2)
+                    <div class="bg-slate-50 rounded-xl p-3">
+                        <p class="text-xs text-slate-400 font-medium uppercase">Supir 2</p>
+                        <p class="font-bold text-slate-700 mt-0.5 text-sm">{{ $pemesanan->jadwal->supir2->nama }}</p>
+                    </div>
+                    @endif
+                    @if($pemesanan->jadwal->kenek)
+                    <div class="bg-slate-50 rounded-xl p-3">
+                        <p class="text-xs text-slate-400 font-medium uppercase">Kenek</p>
+                        <p class="font-bold text-slate-700 mt-0.5 text-sm">{{ $pemesanan->jadwal->kenek->nama }}</p>
+                    </div>
+                    @endif
                 </div>
 
                 {{-- Lokasi Pool (Google Maps) --}}

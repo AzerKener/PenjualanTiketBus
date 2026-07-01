@@ -11,7 +11,14 @@ class TransaksiController extends Controller
 {
     public function index(Request $request)
     {
+        $salesPoolId = Auth::user()->pool_id;
+
         $query = Pemesanan::with(['jadwal.rute', 'penumpangs'])
+            ->when($salesPoolId, function ($query, $poolId) {
+                $query->whereHas('jadwal', function ($q) use ($poolId) {
+                    $q->where('pool_id', $poolId);
+                });
+            })
             ->where(function ($q) {
                 $q->where('sales_id', Auth::id())
                   ->orWhere('tipe_pemesanan', 'Online');

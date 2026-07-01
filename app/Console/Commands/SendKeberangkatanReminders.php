@@ -33,12 +33,12 @@ class SendKeberangkatanReminders extends Command
         $now = Carbon::now();
         
         // Ambil jadwal yang belum selesai/batal
-        $jadwals = Jadwal::with(['supir1.user', 'supir2.user', 'kenek.user', 'penumpangs.user'])
+        $jadwals = Jadwal::with(['supir1.user', 'supir2.user', 'kenek.user', 'penumpangs.pemesanan.user'])
             ->whereIn('status', ['menunggu', 'boarding'])
             ->get();
 
         foreach ($jadwals as $jadwal) {
-            $waktuBerangkat = Carbon::parse($jadwal->tanggal_berangkat . ' ' . $this->formatWaktu($jadwal->waktu_berangkat));
+            $waktuBerangkat = Carbon::parse(Carbon::parse($jadwal->tanggal_berangkat)->format('Y-m-d') . ' ' . $this->formatWaktu($jadwal->waktu_berangkat));
             $selisihMenit = $now->diffInMinutes($waktuBerangkat, false); // false agar positif jika masa depan
 
             // Jika jadwal sudah lewat, skip

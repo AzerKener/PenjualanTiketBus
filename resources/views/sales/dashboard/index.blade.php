@@ -80,9 +80,19 @@
                     </td>
                     <td class="p-4 text-sm font-bold text-slate-800">Rp {{ number_format($trx->total_bayar, 0, ',', '.') }}</td>
                     <td class="p-4">
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
-                        </span>
+                        @if($trx->status_pembayaran === 'lunas' || $trx->status_pembayaran === 'selesai')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
+                            </span>
+                        @elseif($trx->status_pembayaran === 'pending')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Batal
+                            </span>
+                        @endif
                     </td>
                 </tr>
                 @empty

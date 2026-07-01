@@ -20,15 +20,15 @@ class OtomatisBoardingJadwal extends Command
      *
      * @var string
      */
-    protected $description = 'Otomatis mengubah status jadwal menjadi boarding 60 menit sebelum berangkat';
+    protected $description = 'Otomatis mengubah status jadwal menjadi boarding 30 menit sebelum berangkat';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        // Cari jadwal yang statusnya menunggu dan waktunya <= 60 menit dari sekarang
-        $targetTime = Carbon::now()->addMinutes(60);
+        // Cari jadwal yang statusnya menunggu dan waktunya <= 30 menit dari sekarang
+        $targetTime = Carbon::now()->addMinutes(30);
         
         $jadwals = Jadwal::where('status', 'menunggu')
             ->whereRaw("CONCAT(tanggal_berangkat, ' ', waktu_berangkat) <= ?", [$targetTime])
@@ -50,7 +50,18 @@ class OtomatisBoardingJadwal extends Command
                 $user->notify(new \App\Notifications\BusTibaDiPool($jadwal));
             }
 
-            $this->info("Jadwal {$jadwal->id} diubah menjadi boarding (60 menit sebelum berangkat).");
+            // Notify Supir & Kenek
+            if ($jadwal->supir1 && $jadwal->supir1->user) {
+                $jadwal->supir1->user->notify(new \App\Notifications\BusTibaDiPool($jadwal));
+            }
+            if ($jadwal->supir2 && $jadwal->supir2->user) {
+                $jadwal->supir2->user->notify(new \App\Notifications\BusTibaDiPool($jadwal));
+            }
+            if ($jadwal->kenek && $jadwal->kenek->user) {
+                $jadwal->kenek->user->notify(new \App\Notifications\BusTibaDiPool($jadwal));
+            }
+
+            $this->info("Jadwal {$jadwal->id} diubah menjadi boarding (30 menit sebelum berangkat).");
         }
     }
 }

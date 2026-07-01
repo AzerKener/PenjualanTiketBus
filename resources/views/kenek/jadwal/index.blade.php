@@ -136,6 +136,43 @@
             </div>
             @endif
         </div>
+
+        {{-- Passenger List Toggle --}}
+        <div class="mt-4 border-t border-slate-100 pt-4" x-data="{ open: false }">
+            <button @click="open = !open" class="flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition">
+                <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                Lihat Daftar Penumpang ({{ $jadwal->penumpangs->count() }})
+            </button>
+            <div x-show="open" x-transition class="mt-3" style="display: none;">
+                @if($jadwal->penumpangs->isEmpty())
+                    <p class="text-sm text-slate-500 italic">Belum ada penumpang.</p>
+                @else
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+                                <tr>
+                                    <th class="px-4 py-2">Kursi</th>
+                                    <th class="px-4 py-2">Penumpang</th>
+                                    <th class="px-4 py-2">Pemesan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @foreach($jadwal->penumpangs->sortBy('nomor_kursi') as $penumpang)
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-2 font-bold text-slate-700 whitespace-nowrap">{{ $penumpang->nomor_kursi }}</td>
+                                    <td class="px-4 py-2">{{ $penumpang->nama_penumpang }}</td>
+                                    <td class="px-4 py-2 text-xs">
+                                        <span class="font-semibold">{{ $penumpang->pemesanan->nama_pemesan ?? '-' }}</span><br>
+                                        <span class="text-slate-400">{{ $penumpang->pemesanan->no_hp_pemesan ?? '' }}</span>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
     </div>
     @endforeach
 </div>
