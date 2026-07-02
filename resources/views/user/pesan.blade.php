@@ -761,8 +761,6 @@
                                         x-text="' Rp ' + totalHarga().toLocaleString('id-ID')">
                                     </span>
                                 </div>
-                                <p x-show="metodePembayaran === 'Cash'" x-cloak class="text-xs text-green-400 mt-1">✓
-                                    Status: Langsung Lunas</p>
                                 <p x-show="metodePembayaran && metodePembayaran !== 'Cash'" x-cloak
                                     class="text-xs text-amber-400 mt-1">⏳ Status: Pending konfirmasi</p>
                             </div>
